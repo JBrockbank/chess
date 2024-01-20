@@ -9,9 +9,9 @@ import java.lang.reflect.Array;
  * signature of the existing methods.
  */
 public class ChessBoard {
-
+    private ChessPiece[][] board = new ChessPiece[8][8];
     public ChessBoard() {
-        
+        System.out.println("Creating the Board");
     }
 
     /**
@@ -21,7 +21,10 @@ public class ChessBoard {
      * @param piece    the piece to add
      */
     public void addPiece(ChessPosition position, ChessPiece piece) {
-        throw new RuntimeException("Not implemented");
+        int row = position.getRow();
+        int col = position.getColumn();
+        System.out.printf("Adding a piece at (%d,%d)", row, col);
+        board[row][col] = piece;
     }
 
     /**
@@ -32,7 +35,10 @@ public class ChessBoard {
      * position
      */
     public ChessPiece getPiece(ChessPosition position) {
-        throw new RuntimeException("Not implemented");
+        int row = position.getRow();
+        int col = position.getColumn();
+        System.out.printf("Getting a piece at (%d,%d)", row, col);
+        return board[row][col];
     }
 
     /**
@@ -40,22 +46,6 @@ public class ChessBoard {
      * (How the game of chess normally starts)
      */
     public void resetBoard() {
-
-        ChessPiece.PieceType[][] board = new ChessPiece.PieceType[8][8];
-
-        for (int i = 0; i < 8; i++){
-            for (int j = 0; j < 8; j++) {
-                board[i][j] = ' ';
-            }
-        }
-
-        for (int i = 0; i < 8; i++) {
-            board[0][i] = 'p';
-            board[8][i] = 'p';
-        }
-        for (int i = 0; i < 8; i++) {
-
-        }
-
+    throw new RuntimeException("Not implemented");
     }
 }
