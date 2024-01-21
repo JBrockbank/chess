@@ -9,7 +9,7 @@ import java.lang.reflect.Array;
  * signature of the existing methods.
  */
 public class ChessBoard {
-    private ChessPiece[][] board = new ChessPiece[8][8];
+    private ChessPiece[][] board = new ChessPiece[9][9];
     public ChessBoard() {
         System.out.println("Creating the Board");
     }
@@ -23,7 +23,7 @@ public class ChessBoard {
     public void addPiece(ChessPosition position, ChessPiece piece) {
         int row = position.getRow();
         int col = position.getColumn();
-        System.out.printf("Adding a piece at (%d,%d)", row, col);
+        System.out.printf("Adding a piece at (%d,%d)\n", row, col);
         board[row][col] = piece;
     }
 
@@ -37,7 +37,7 @@ public class ChessBoard {
     public ChessPiece getPiece(ChessPosition position) {
         int row = position.getRow();
         int col = position.getColumn();
-        System.out.printf("Getting a piece at (%d,%d)", row, col);
+        System.out.printf("Getting a piece at (%d,%d)\n", row, col);
         return board[row][col];
     }
 

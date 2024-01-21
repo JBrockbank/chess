@@ -57,7 +57,7 @@ public class ChessPiece {
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
 
         if (pieceType == PieceType.BISHOP) {
-            BishopMovesCalculator pieceCalculator = new BishopMovesCalculator(board, myPosition);
+            BishopMovesCalculator pieceCalculator = new BishopMovesCalculator(board, myPosition, pieceColor);
             Collection<ChessMove> validMoves =  pieceCalculator.pieceMoves();
             return validMoves;
         }
