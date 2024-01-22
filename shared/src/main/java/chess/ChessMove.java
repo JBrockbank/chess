@@ -48,7 +48,7 @@ public class ChessMove {
 
     @Override
     public String toString() {
-        return String.format("(%d,%d):%d", endPosition.getRow(), endPosition.getColumn(), hashCode());
+        return String.format("(%d,%d)", endPosition.getRow(), endPosition.getColumn());
     }
 
     @Override
