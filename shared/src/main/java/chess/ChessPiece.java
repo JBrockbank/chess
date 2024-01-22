@@ -1,9 +1,11 @@
 package chess;
 
-import chess.pieces.BishopMovesCalculator;
+import chess.pieces.*;
+
 
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Objects;
 
 /**
  * Represents a single chess piece
@@ -61,8 +63,31 @@ public class ChessPiece {
             Collection<ChessMove> validMoves =  pieceCalculator.pieceMoves();
             return validMoves;
         }
+        else if (pieceType == PieceType.KING) {
+            KingMovesCalculator pieceCalculator = new KingMovesCalculator(board, myPosition, pieceColor);
+            Collection<ChessMove> validMoves =  pieceCalculator.pieceMoves();
+            return validMoves;
+        }
+        else if (pieceType == PieceType.ROOK) {
+            RookMovesCalculator pieceCalculator = new RookMovesCalculator(board, myPosition, pieceColor);
+            Collection<ChessMove> validMoves =  pieceCalculator.pieceMoves();
+            return validMoves;
+        }
+
         return null;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ChessPiece that = (ChessPiece) o;
+        return pieceColor == that.pieceColor && pieceType == that.pieceType;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(pieceColor, pieceType);
+    }
 }
 
