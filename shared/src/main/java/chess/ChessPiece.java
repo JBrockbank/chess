@@ -73,6 +73,11 @@ public class ChessPiece {
             Collection<ChessMove> validMoves =  pieceCalculator.pieceMoves();
             return validMoves;
         }
+        else if (pieceType == PieceType.PAWN) {
+            PawnMovesCalculator pieceCalculator = new PawnMovesCalculator(board, myPosition, pieceColor);
+            Collection<ChessMove> validMoves =  pieceCalculator.pieceMoves();
+            return validMoves;
+        }
         else if (pieceType == PieceType.ROOK) {
             RookMovesCalculator pieceCalculator = new RookMovesCalculator(board, myPosition, pieceColor);
             Collection<ChessMove> validMoves =  pieceCalculator.pieceMoves();
