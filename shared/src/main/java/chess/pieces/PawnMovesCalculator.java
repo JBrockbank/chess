@@ -17,6 +17,7 @@ public class PawnMovesCalculator extends PieceMovesCalculator{
         int row = position.getRow();
         int col = position.getColumn();
 
+        //Adding Moves for White Pawns
         if(this.teamColor == ChessGame.TeamColor.WHITE){
             if (CanMoveHere(row + 1, col)){
                 AddMove(row + 1, col);
@@ -33,6 +34,7 @@ public class PawnMovesCalculator extends PieceMovesCalculator{
                 AddMove(row + 1, col + 1);
             }
         }
+        //Adding Moves for Black Pawns
         else {
             if (CanMoveHere(row - 1, col)){
                 AddMove(row - 1, col);

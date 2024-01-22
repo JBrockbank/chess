@@ -47,6 +47,7 @@ public class ChessBoard {
      * (How the game of chess normally starts)
      */
     public void resetBoard() {
+        //Creating and Adding the pawns to the board
         for (int i = 1; i < 9; i++){
             ChessPiece whitePawn = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.PAWN);
             ChessPiece blackPawn = new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.PAWN);
@@ -57,6 +58,7 @@ public class ChessBoard {
             }
         int row = 0;
         ChessGame.TeamColor teamColor;
+        //Creating and Adding the rest of the non-pawn pieces to the board
         for (int j = 0; j < 2; j++){
             if (j == 0) {
                 row = 1;
@@ -66,11 +68,13 @@ public class ChessBoard {
                 row = 8;
                 teamColor = ChessGame.TeamColor.BLACK;
             }
+            //Create Chess Pieces of all the types
             ChessPiece rook = new ChessPiece(teamColor, ChessPiece.PieceType.ROOK);
             ChessPiece knight = new ChessPiece(teamColor, ChessPiece.PieceType.KNIGHT);
             ChessPiece bishop = new ChessPiece(teamColor, ChessPiece.PieceType.BISHOP);
             ChessPiece queen = new ChessPiece(teamColor, ChessPiece.PieceType.QUEEN);
             ChessPiece king = new ChessPiece(teamColor, ChessPiece.PieceType.KING);
+            //Create the positions for all the pieces
             ChessPosition posRook1 = new ChessPosition(row, 1);
             ChessPosition posRook2 = new ChessPosition(row, 8);
             ChessPosition posKnight1 = new ChessPosition(row, 2);
@@ -79,6 +83,7 @@ public class ChessBoard {
             ChessPosition posBishop2 = new ChessPosition(row, 6);
             ChessPosition posQueen = new ChessPosition(row, 4);
             ChessPosition posKing = new ChessPosition(row, 5);
+            //Add the pieces to the board
             addPiece(posRook1, rook);
             addPiece(posRook2, rook);
             addPiece(posKnight1, knight);
