@@ -51,7 +51,6 @@ public class PawnMovesCalculator extends PieceMovesCalculator{
                 AddMove(row - 1, col + 1);
             }
         }
-
         return validMoves;
     }
 
