@@ -24,7 +24,6 @@ public class ChessBoard {
     public void addPiece(ChessPosition position, ChessPiece piece) {
         int row = position.getRow();
         int col = position.getColumn();
-        System.out.printf("Adding a piece at (%d,%d)\n", row, col);
         board[row][col] = piece;
     }
 
@@ -38,7 +37,9 @@ public class ChessBoard {
     public ChessPiece getPiece(ChessPosition position) {
         int row = position.getRow();
         int col = position.getColumn();
-        System.out.printf("Getting a piece at (%d,%d)\n", row, col);
+        if(row > 8 || row < 1 || col > 8 || col < 1) {
+            return null;
+        }
         return board[row][col];
     }
 
@@ -95,6 +96,20 @@ public class ChessBoard {
         }
     }
 
+    public ChessBoard deepCopy(){
+        ChessBoard newBoard = new ChessBoard();
+        for (int row = 1; row < 9; row++){
+            for (int col = 1; col < 9; col++){
+                ChessPosition pos = new ChessPosition(row, col);
+                newBoard.addPiece(pos, getPiece(pos));
+            }
+        }
+        return newBoard;
+    }
+
+
+
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -107,6 +122,35 @@ public class ChessBoard {
     public int hashCode() {
         return Arrays.deepHashCode(board);
     }
+
+    @Override
+    public String toString() {
+        StringBuilder returnString = new StringBuilder();
+        for (int i = 8; i > 0; i--){
+            for (int j = 1; j < 9; j++){
+                ChessPosition pos = new ChessPosition(i, j);
+                ChessPiece piece = getPiece(pos);
+                if (piece == null){
+                    returnString.append("| ");
+                }
+                else {
+                    returnString.append("|");
+                    returnString.append(piece.toString());
+                }
+            }
+            returnString.append("|");
+            returnString.append("\n");
+        }
+        return returnString.toString();
+    }
+
+
+
+
 }
+
+
+
+
 
 

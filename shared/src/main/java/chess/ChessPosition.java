@@ -47,14 +47,7 @@ public class ChessPosition {
             return false;
         }
         ChessPosition other = (ChessPosition) obj;
-        boolean same = this.getRow() == other.getRow() && this.getColumn() == other.getColumn();
-        if(same){
-            System.out.println("True");
-        }
-        else {
-            System.out.println("False");
-        }
-        return same;
+        return this.getRow() == other.getRow() && this.getColumn() == other.getColumn();
     }
 
     @Override

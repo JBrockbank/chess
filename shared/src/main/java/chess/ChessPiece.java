@@ -104,5 +104,60 @@ public class ChessPiece {
     public int hashCode() {
         return Objects.hash(pieceColor, pieceType);
     }
+
+    @Override
+    public String toString() {
+        if (pieceColor == ChessGame.TeamColor.WHITE){
+            if (pieceType == PieceType.BISHOP){
+                return "B";
+            }
+            else if (pieceType == PieceType.QUEEN){
+                return "Q";
+            }
+            else if (pieceType == PieceType.KING){
+                return "K";
+            }
+            else if (pieceType == PieceType.ROOK){
+                return "R";
+            }
+            else if (pieceType == PieceType.KNIGHT){
+                return "N";
+            }
+            else if (pieceType == PieceType.PAWN){
+                return "P";
+            }
+            else {
+                return " ";
+            }
+        }
+        else if (pieceColor == ChessGame.TeamColor.BLACK){
+            if (pieceType == PieceType.BISHOP){
+                return "b";
+            }
+            else if (pieceType == PieceType.QUEEN){
+                return "q";
+            }
+            else if (pieceType == PieceType.KING){
+                return "k";
+            }
+            else if (pieceType == PieceType.ROOK){
+                return "r";
+            }
+            else if (pieceType == PieceType.KNIGHT){
+                return "n";
+            }
+            else if (pieceType == PieceType.PAWN){
+                return "p";
+            }
+            else {
+                return " ";
+            }
+        }
+        else {
+            return " ";
+        }
+    }
 }
+
+
 
