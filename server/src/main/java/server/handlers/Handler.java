@@ -2,6 +2,7 @@ package server.handlers;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
+import dataAccess.DataAccessException;
 import dataAccess.GameDAO;
 import dataAccess.MemoryGameDAO;
 import model.AuthData;
@@ -22,8 +23,10 @@ public class Handler {
         throw new Exception("Not Implemented");
     }
 
-    public Object authenticate(AuthData authdata) throws Exception{
-        throw new Exception("Not Implemented");
+    public void authenticate(String authToken) throws Exception{
+        AuthData authData = authService.getAuthData(authToken);
+        if (authData == null){
+            throw new DataAccessException("Error: unauthorized");
+        }
     }
-
 }

@@ -22,7 +22,7 @@ public class MemoryAuthDAO implements AuthDAO{
             return authMap.get(token);
         }
         else {
-            throw new DataAccessException("Error: Unauthorized");
+            throw new DataAccessException("Error: unauthorized");
         }
     }
     @Override

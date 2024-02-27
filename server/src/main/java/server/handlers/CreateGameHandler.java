@@ -10,6 +10,8 @@ public class CreateGameHandler extends Handler{
 
     public Object handle(Request req, Response res) {
         try {
+            String authToken = req.headers("Authorization");
+            authenticate(authToken);
             GameData game = new Gson().fromJson(req.body(), GameData.class);
             String gameName = game.gameName();
             Integer gameID = gameService.createGame(gameName);
