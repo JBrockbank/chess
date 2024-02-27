@@ -15,7 +15,8 @@ public class ChessGame {
     public ChessBoard board;
 
     public ChessGame() {
-
+        this.board = new ChessBoard();
+        this.turnColor = TeamColor.WHITE;
     }
 
     /**

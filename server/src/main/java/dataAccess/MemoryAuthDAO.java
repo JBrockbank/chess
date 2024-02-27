@@ -17,7 +17,7 @@ public class MemoryAuthDAO implements AuthDAO{
         return authData;
     }
     @Override
-    public AuthData getAuth(AuthData token) throws DataAccessException{
+    public AuthData getAuth(String token) throws DataAccessException{
         if(authMap.get(token) != null) {
             return authMap.get(token);
         }
@@ -26,12 +26,12 @@ public class MemoryAuthDAO implements AuthDAO{
         }
     }
     @Override
-    public void deleteAuth(AuthData token) throws DataAccessException{
+    public void deleteAuth(String token) throws DataAccessException{
         if(authMap.get(token) != null) {
             authMap.remove(token);
         }
         else {
-            throw new DataAccessException("Error: Auth Token does not exist");
+            throw new DataAccessException("Error: bad request");
         }
     }
 

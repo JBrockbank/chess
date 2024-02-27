@@ -7,21 +7,23 @@ import java.util.Collection;
 import java.util.HashMap;
 
 public class MemoryGameDAO implements GameDAO{
-    int gameCount = 0;
-    static HashMap<String, GameData> gameList = new HashMap<>();
+    static int gameCount = 0;
+    static HashMap<Integer, GameData> gameList = new HashMap<>();
     @Override
-    public void createGame(String gameName) throws DataAccessException {
+    public int createGame(String gameName) throws DataAccessException {
         gameCount++;
         int gameID = gameCount;
         ChessGame game = new ChessGame();
+        game.getBoard().resetBoard();
         GameData gameData = new GameData(gameID, null, null, gameName, game);
-        gameList.put(gameName, gameData);
+        gameList.put(gameID, gameData);
+        return gameID;
     }
 
     @Override
-    public GameData getGame(String gameName) throws DataAccessException {
-        if(gameList.get(gameName) != null){
-            return gameList.get(gameName);
+    public GameData getGame(int gameID) throws DataAccessException {
+        if(gameList.get(gameID) != null){
+            return gameList.get(gameID);
         }
         else {
             throw new DataAccessException("Error: Game not found");
@@ -29,9 +31,9 @@ public class MemoryGameDAO implements GameDAO{
     }
 
     @Override
-    public void updateGame(String gameName, GameData gameData) throws DataAccessException {
-        if(gameList.get(gameName) != null){
-            gameList.replace(gameName, gameData);
+    public void updateGame(int gameID, GameData gameData) throws DataAccessException {
+        if(gameList.get(gameID) != null){
+            gameList.replace(gameID, gameData);
         }
         else {
             throw new DataAccessException("Error: Game not found");
@@ -39,9 +41,9 @@ public class MemoryGameDAO implements GameDAO{
     }
 
     @Override
-    public void deleteGame(String gameName) throws DataAccessException {
-        if(gameList.get(gameName) != null){
-            gameList.remove(gameName);
+    public void deleteGame(int gameID) throws DataAccessException {
+        if(gameList.get(gameID) != null){
+            gameList.remove(gameID);
         }
         else {
             throw new DataAccessException("Error: Game not found");

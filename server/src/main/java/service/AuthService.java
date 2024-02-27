@@ -24,6 +24,11 @@ public class AuthService {
         return null;
     }
 
+    public void delete(String authToken) throws DataAccessException{
+        authDAO.deleteAuth(authToken);
+    }
+
+
 
     public void clear(){
         authDAO.clear();
