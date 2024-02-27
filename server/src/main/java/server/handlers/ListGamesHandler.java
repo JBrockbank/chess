@@ -16,12 +16,7 @@ public class ListGamesHandler extends Handler{
             res.status(200);
             return new Gson().toJson(games);
         } catch (Exception e) {
-            if (e.getMessage().equals("Error: unauthorized")){
-                res.status(401);
-                return new Gson().toJson(e.getMessage());
-            }
-            res.status(500);
-            return new Gson().toJson(e.getMessage());
+            return evalException(req, res, e);
         }
     }
 

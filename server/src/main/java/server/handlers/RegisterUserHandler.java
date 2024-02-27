@@ -18,16 +18,7 @@ public class RegisterUserHandler extends Handler{
             res.status(200);
             return data;
         } catch (Exception e){
-            if (e.getMessage().equals("Error: bad request")){
-                res.status(400);
-                return new Gson().toJson(e.getMessage());
-            } else if (e.getMessage().equals("Error: already taken")) {
-                res.status(403);
-                return new Gson().toJson(e.getMessage());
-            }
-            res.status(500);
-            res.body(e.getMessage());
-            return null;
+            return evalException(req, res, e);
         }
 
     }

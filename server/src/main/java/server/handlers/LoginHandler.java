@@ -18,17 +18,12 @@ public class LoginHandler extends Handler{
                 AuthData authData = authService.newToken(userData.username());
                 return new Gson().toJson(authData);
             }
+            else {
+                throw new DataAccessException("Error: unauthorized");
+            }
         }
         catch (DataAccessException e) {
-            if (e.getMessage().equals("Error: unauthorized")) {
-            res.status(401);
-            return new Gson().toJson(e.getMessage());
+            return evalException(req, res, e);
         }
-        res.status(500);
-        return new Gson().toJson((e.getMessage()));
-        }
-        return null;
     }
-
-
 }

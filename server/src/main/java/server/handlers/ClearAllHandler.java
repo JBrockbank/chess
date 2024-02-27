@@ -13,11 +13,9 @@ public class ClearAllHandler extends Handler{
             userService.clear();
             authService.clear();
             res.status(200);
-            var serializer = new Gson();
-            return serializer.toJson(null);
+            return new Gson().toJson(res.status());
         } catch (Exception e){
-            res.status(500);
-            return new Gson().toJson(e.getMessage());
+            return evalException(req, res, e);
         }
     }
 }

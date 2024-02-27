@@ -14,12 +14,7 @@ public class LogoutHandler extends Handler{
             res.status(200);
             return new Gson().toJson(res.status());
         } catch (Exception e) {
-            if(e.getMessage().equals("Error: unauthorized")){
-                res.status(401);
-                return new Gson().toJson(e.getMessage());
-            }
-            res.status(500);
-            return new Gson().toJson(e.getMessage());
+            return evalException(req, res, e);
         }
     }
 
