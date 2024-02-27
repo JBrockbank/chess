@@ -1,10 +1,13 @@
 package server;
 
+import dataAccess.DataAccessException;
 import server.handlers.*;
 import spark.*;
 
 
 public class Server {
+
+
 
     public int run(int desiredPort) {
         Spark.port(desiredPort);
@@ -13,11 +16,9 @@ public class Server {
         Spark.staticFiles.location("web");
 
         // Register your endpoints and handle exceptions here.
-        try {
-            createRoutes();
-        } catch (Exception e) {
 
-        }
+        createRoutes();
+
 
 
 
@@ -26,9 +27,10 @@ public class Server {
         return Spark.port();
     }
 
-    private static void createRoutes() throws Exception{
-        Spark.get("/hello", (req, res) -> "Hello");
+    private static void createRoutes() {
         Spark.delete("/db", (req, res) -> new ClearAllHandler().handle(req, res));
+        Spark.post("/user", (req, res) -> new RegisterUserHandler().handle(req, res));
+        Spark.post("/session", (req, res) -> new LoginHandler().handle(req, res));
 
     }
 

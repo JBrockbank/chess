@@ -8,18 +8,13 @@ import java.util.UUID;
 
 public class MemoryAuthDAO implements AuthDAO{
 
-    HashMap<String, AuthData> authMap = new HashMap<>();
+    static HashMap<String, AuthData> authMap = new HashMap<>();
     @Override
-    public void createAuth(String username) throws DataAccessException {
-        if(authMap.get(username) != null) {
-            throw new DataAccessException("Error: already taken");
-        }
-        else {
-            String authToken = UUID.randomUUID().toString();
-            AuthData authData = new AuthData(authToken, username);
-            authMap.put(authToken, authData);
-        }
-
+    public AuthData createAuth(String username) throws DataAccessException {
+        String authToken = UUID.randomUUID().toString();
+        AuthData authData = new AuthData(authToken, username);
+        authMap.put(authToken, authData);
+        return authData;
     }
     @Override
     public AuthData getAuth(AuthData token) throws DataAccessException{

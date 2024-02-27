@@ -8,7 +8,7 @@ import java.util.HashMap;
 
 public class MemoryUserDAO implements UserDAO {
 
-    HashMap<String, UserData> userList = new HashMap<>();
+    static HashMap<String, UserData> userList = new HashMap<>();
     @Override
     public void clear() {
         userList.clear();
@@ -29,7 +29,7 @@ public class MemoryUserDAO implements UserDAO {
     public UserData getUser(String username) throws DataAccessException {
         UserData u = userList.get(username);
         if(u == null){
-            throw new DataAccessException("Error: User not found");
+            throw new DataAccessException("Error: bad request");
         }
             return u;
     }
@@ -41,7 +41,7 @@ public class MemoryUserDAO implements UserDAO {
             userList.replace(u.username(), u);
         }
         else {
-            throw new DataAccessException("Error: User not found");
+            throw new DataAccessException("Error: bad request");
         }
     }
 
@@ -51,7 +51,7 @@ public class MemoryUserDAO implements UserDAO {
             userList.remove(username);
         }
         else {
-            throw new DataAccessException("Error: User not found");
+            throw new DataAccessException("Error: bad request");
         }
     }
 
