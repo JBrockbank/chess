@@ -2,7 +2,7 @@ package server.handlers;
 
 import spark.Request;
 import spark.Response;
-import server.services.*;
+import service.*;
 
 
 public class Handler {

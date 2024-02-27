@@ -11,6 +11,7 @@ public interface GameDAO {
     void updateGame(String gameName, GameData gameData) throws DataAccessException;
     void deleteGame(String gameName) throws DataAccessException;
     Collection<GameData> getAllGames();
+    void clear();
 
 
 }

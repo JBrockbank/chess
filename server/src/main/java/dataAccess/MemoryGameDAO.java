@@ -52,4 +52,9 @@ public class MemoryGameDAO implements GameDAO{
     public Collection<GameData> getAllGames() {
         return gameList.values();
     }
+
+    @Override
+    public void clear(){
+        gameList.clear();
+    }
 }
