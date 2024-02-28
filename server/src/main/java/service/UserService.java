@@ -7,7 +7,7 @@ import model.UserData;
 
 public class UserService {
 
-    UserDAO userDAO;
+    public UserDAO userDAO;
 
     public  UserService(){
         userDAO = new MemoryUserDAO();

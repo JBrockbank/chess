@@ -8,20 +8,15 @@ import model.UserData;
 
 public class AuthService {
 
-    private static AuthDAO authDAO;
+    public static AuthDAO authDAO;
 
     public AuthService(){
         authDAO = new MemoryAuthDAO();
     }
 
-    public AuthData newToken(String username){
-        try {
-            AuthData authData = authDAO.createAuth(username);
-            return authData;
-        } catch (DataAccessException e) {
-
-        }
-        return null;
+    public AuthData newToken(String username) throws DataAccessException{
+        AuthData authData = authDAO.createAuth(username);
+        return authData;
     }
 
     public AuthData getAuthData(String authToken) throws DataAccessException{
