@@ -11,6 +11,8 @@ public class CreateGameHandler extends Handler{
 
     public Object handle(Request req, Response res) {
         try {
+            System.out.println("CreateGame");
+
             String authToken = req.headers("Authorization");
             authenticate(authToken);
             GameData game = new Gson().fromJson(req.body(), GameData.class);

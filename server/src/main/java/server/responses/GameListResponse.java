@@ -6,10 +6,10 @@ import java.util.Collection;
 
 public class GameListResponse extends BaseResponse{
 
-    private Collection<GameData> gameList;
+    public Collection<GameData> games;
 
-    public GameListResponse(Collection<GameData> gameList){
-        this.gameList = gameList;
+    public GameListResponse(Collection<GameData> games){
+        this.games = games;
     }
 
 }

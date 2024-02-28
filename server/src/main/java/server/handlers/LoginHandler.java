@@ -12,6 +12,8 @@ public class LoginHandler extends Handler{
 
     public Object handle(Request req, Response res) throws DataAccessException{
         try {
+            System.out.println("Login");
+
             UserData userData = new Gson().fromJson(req.body(), UserData.class);
             if (userService.verifyUser(userData)){
                 AuthData authData = authService.newToken(userData.username());

@@ -10,6 +10,7 @@ public class ClearAllHandler extends Handler{
     @Override
     public Object handle(Request req, Response res) {
         try {
+            System.out.println("Clear");
             gameService.clear();
             userService.clear();
             authService.clear();
