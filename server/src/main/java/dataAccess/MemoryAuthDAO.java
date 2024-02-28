@@ -31,7 +31,7 @@ public class MemoryAuthDAO implements AuthDAO{
             authMap.remove(token);
         }
         else {
-            throw new DataAccessException("Error: bad request");
+            throw new DataAccessException("Error: unauthorized");
         }
     }
 

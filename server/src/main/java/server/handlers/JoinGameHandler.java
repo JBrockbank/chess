@@ -22,10 +22,11 @@ public class JoinGameHandler extends Handler{
             Gson gson = new Gson();
             Map<String, Object> requestBody = gson.fromJson(req.body(), Map.class);
             String playerColor = (String) requestBody.get("playerColor");
-            int gameID = (int) requestBody.get("gameID");
+            double dgameID = (double) requestBody.get("gameID");
+            int gameID = (int) dgameID;
             gameService.joinGame(gameID, playerColor, username);
             res.status(200);
-            return new Gson().toJson(res.status());
+            return "{}";
         } catch (Exception e) {
             return evalException(req, res, e);
 

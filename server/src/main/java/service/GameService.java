@@ -10,7 +10,7 @@ import java.util.Collection;
 
 public class GameService {
 
-    private static GameDAO gameDAO;
+    public static GameDAO gameDAO;
 
     public GameService(){
         gameDAO = new MemoryGameDAO();
@@ -26,21 +26,20 @@ public class GameService {
 
     public void joinGame(int gameID, String playerColor, String username) throws DataAccessException{
         GameData gameData = gameDAO.getGame(gameID);
-        if(playerColor == "empty"){
+        if(playerColor.equals("empty") || playerColor.isEmpty()){
 
         }
         else if (playerColor.equals("WHITE")){
-            if (gameData.whiteUsername() != null){
+            if (gameData.whiteUsername() == null){
                 GameData newGameData = new GameData(gameID, username, gameData.blackUsername(), gameData.gameName(), gameData.game());
                 gameDAO.updateGame(gameID, newGameData);
-
             }
             else {
                 throw new DataAccessException("Error: already taken");
             }
         }
         else if (playerColor.equals("BLACK")){
-            if (gameData.blackUsername() != null){
+            if (gameData.blackUsername() == null){
                 GameData newGameData = new GameData(gameID, gameData.whiteUsername(), username, gameData.gameName(), gameData.game());
                 gameDAO.updateGame(gameID, newGameData);
             }

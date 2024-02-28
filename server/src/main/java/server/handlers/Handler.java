@@ -7,6 +7,7 @@ import dataAccess.GameDAO;
 import dataAccess.MemoryGameDAO;
 import model.AuthData;
 import model.UserData;
+import server.responses.ErrorResponse;
 import spark.Request;
 import spark.Response;
 import service.*;
@@ -31,19 +32,16 @@ public class Handler {
     }
 
     public Object evalException(Request req, Response res, Exception e){
+        ErrorResponse response = new ErrorResponse(e.getMessage());
         if (e.getMessage().equals("Error: bad request")){
             res.status(400);
-            return new Gson().toJson(e.getMessage());
         }
         else if (e.getMessage().equals("Error: unauthorized")) {
             res.status(401);
-            return new Gson().toJson(e.getMessage());
         } else if (e.getMessage().equals("Error: already taken")) {
             res.status(403);
-            return new Gson().toJson(e.getMessage());
         }
-        res.status(500);
-        return new Gson().toJson(e.getMessage());
+        return response.toJSon();
     }
 
 

@@ -28,7 +28,7 @@ public class MemoryGameDAO implements GameDAO{
             return gameList.get(gameID);
         }
         else {
-            throw new DataAccessException("Error: Game not found");
+            throw new DataAccessException("Error: bad request");
         }
     }
 
@@ -38,7 +38,7 @@ public class MemoryGameDAO implements GameDAO{
             gameList.replace(gameID, gameData);
         }
         else {
-            throw new DataAccessException("Error: Game not found");
+            throw new DataAccessException("Error: bad request");
         }
     }
 
@@ -48,7 +48,7 @@ public class MemoryGameDAO implements GameDAO{
             gameList.remove(gameID);
         }
         else {
-            throw new DataAccessException("Error: Game not found");
+            throw new DataAccessException("Error: bad request");
         }
     }
 

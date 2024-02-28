@@ -12,7 +12,7 @@ public class LogoutHandler extends Handler{
             authenticate(authToken);
             authService.delete(authToken);
             res.status(200);
-            return new Gson().toJson(res.status());
+            return "{}";
         } catch (Exception e) {
             return evalException(req, res, e);
         }

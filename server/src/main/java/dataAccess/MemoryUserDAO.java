@@ -16,11 +16,11 @@ public class MemoryUserDAO implements UserDAO {
 
     @Override
     public void addUser(UserData u) throws DataAccessException {
-
-        if(userList.get(u.username()) != null){
+        if (u.password() == null || u.username() == null) {
+            throw new DataAccessException("Error: bad request");
+        } else if(userList.get(u.username()) != null){
             throw new DataAccessException("Error: already taken");
-        }
-        else {
+        } else {
             userList.put(u.username(), u);
         }
     }
@@ -29,7 +29,7 @@ public class MemoryUserDAO implements UserDAO {
     public UserData getUser(String username) throws DataAccessException {
         UserData u = userList.get(username);
         if(u == null){
-            throw new DataAccessException("Error: bad request");
+            throw new DataAccessException("Error: unauthorized");
         }
             return u;
     }

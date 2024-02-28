@@ -4,8 +4,7 @@ import com.google.gson.Gson;
 import dataAccess.DataAccessException;
 import model.AuthData;
 import model.UserData;
-import service.GameService;
-import service.UserService;
+import server.responses.RegisterUserResponse;
 import spark.Request;
 import spark.Response;
 
@@ -16,7 +15,8 @@ public class LoginHandler extends Handler{
             UserData userData = new Gson().fromJson(req.body(), UserData.class);
             if (userService.verifyUser(userData)){
                 AuthData authData = authService.newToken(userData.username());
-                return new Gson().toJson(authData);
+                RegisterUserResponse response = new RegisterUserResponse(authData.username(), authData.authToken());
+                return response.toJSon();
             }
             else {
                 throw new DataAccessException("Error: unauthorized");

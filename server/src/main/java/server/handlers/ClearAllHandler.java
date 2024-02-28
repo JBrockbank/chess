@@ -1,6 +1,7 @@
 package server.handlers;
 
 import com.google.gson.Gson;
+import server.responses.BaseResponse;
 import spark.Request;
 import spark.Response;
 
@@ -13,7 +14,7 @@ public class ClearAllHandler extends Handler{
             userService.clear();
             authService.clear();
             res.status(200);
-            return new Gson().toJson(res.status());
+            return "{}";
         } catch (Exception e){
             return evalException(req, res, e);
         }

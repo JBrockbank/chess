@@ -3,6 +3,7 @@ package server.handlers;
 import com.google.gson.Gson;
 import model.AuthData;
 import model.UserData;
+import server.responses.RegisterUserResponse;
 import spark.Request;
 import spark.Response;
 
@@ -14,12 +15,11 @@ public class RegisterUserHandler extends Handler{
             userService.addUser(newUser);
             String username = newUser.username();
             AuthData authData = authService.newToken(username);
-            var data = new Gson().toJson(authData);
             res.status(200);
-            return data;
+            var response = new RegisterUserResponse(username, authData.authToken());
+            return response.toJSon();
         } catch (Exception e){
             return evalException(req, res, e);
         }
-
     }
 }
