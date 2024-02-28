@@ -15,8 +15,6 @@ public class JoinGameHandler extends Handler{
     @Override
     public Object handle(Request req, Response res) throws Exception {
         try {
-            System.out.println("JoinGame");
-
             String authToken = req.headers("Authorization");
             authenticate(authToken);
             AuthData authData = authService.getAuthData(authToken);

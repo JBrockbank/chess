@@ -8,8 +8,6 @@ public class LogoutHandler extends Handler{
 
     public Object handle(Request req, Response res){
         try {
-            System.out.println("Logout");
-
             String authToken = req.headers("Authorization");
             authenticate(authToken);
             authService.delete(authToken);
