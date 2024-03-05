@@ -15,7 +15,14 @@ public class SQLUserDAO implements UserDAO {
 
     @Override
     public void clear() {
+        try (Connection conn = DatabaseManager.getConnection()) {
+            String update = "TRUNCATE userData";
+            PreparedStatement stmt = conn.prepareStatement(update);
+            stmt.executeUpdate();
+        }
+        catch (Exception e) {
 
+        }
     }
 
     @Override
@@ -39,14 +46,20 @@ public class SQLUserDAO implements UserDAO {
     @Override
     public UserData getUser(String username) throws DataAccessException {
         try (Connection conn = DatabaseManager.getConnection()) {
-            String query = "SELECT userData from userData WHERE username = ?";
+            String query = "SELECT * from userData WHERE username = ?";
             PreparedStatement stmt = conn.prepareStatement(query);
             stmt.setString(1, username);
+            ResultSet rs = stmt.executeQuery();
+            if (!rs.next()){
+                return null;
+            }
+            String password = rs.getString("password");
+            String email = rs.getString("email");
+            return new UserData(username, password, email);
         }
         catch (SQLException e) {
             throw new DataAccessException(e.getMessage());
         }
-        return null;
     }
     @Override
     public void updateUser(UserData u) throws DataAccessException {

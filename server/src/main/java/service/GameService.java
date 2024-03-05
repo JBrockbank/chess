@@ -4,6 +4,7 @@ import chess.ChessGame;
 import dataAccess.DataAccessException;
 import dataAccess.GameDAO;
 import dataAccess.MemoryGameDAO;
+import dataAccess.SQLGameDAO;
 import model.GameData;
 
 import java.util.Collection;
@@ -13,7 +14,12 @@ public class GameService {
     public static GameDAO gameDAO;
 
     public GameService(){
-        gameDAO = new MemoryGameDAO();
+        try {
+            gameDAO = new SQLGameDAO();
+        }
+        catch (Exception e) {
+
+        }
     }
 
     public Collection<GameData> ListGames(){

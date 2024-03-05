@@ -39,7 +39,7 @@ public class SQLAuthDAO implements AuthDAO{
     @Override
     public AuthData createAuth(String username) throws DataAccessException {
         try (Connection conn = DatabaseManager.getConnection()) {
-            String sql = "INSERT INTO authData (authToken, authData) VALUES (?, ?)";
+            String sql = "INSERT into authData (authToken, username) VALUES (?, ?)";
             PreparedStatement stmt = conn.prepareStatement(sql);
             String authToken = UUID.randomUUID().toString();
             AuthData authData = new AuthData(authToken, username);
@@ -54,16 +54,44 @@ public class SQLAuthDAO implements AuthDAO{
 
         @Override
     public AuthData getAuth(String token) throws DataAccessException {
-        return null;
+        try (Connection conn = DatabaseManager.getConnection()) {
+            String query = "SELECT * from authData WHERE authToken = ?";
+            PreparedStatement stmt = conn.prepareStatement(query);
+            stmt.setString(1, token);
+            ResultSet rs = stmt.executeQuery();
+            if (!rs.next()) {
+                throw new DataAccessException("Error: unauthorized");
+            }
+            String username = rs.getString("username");
+            return new AuthData(username, token);
+        }
+        catch (Exception e) {
+            throw new DataAccessException(e.getMessage());
+        }
     }
 
     @Override
     public void deleteAuth(String token) throws DataAccessException {
-
+        try (Connection conn = DatabaseManager.getConnection()) {
+            String update = "DELETE FROM authData WHERE authToken = ?";
+            PreparedStatement stmt = conn.prepareStatement(update);
+            stmt.setString(1, token);
+            stmt.executeUpdate();
+        }
+        catch (Exception e) {
+            throw new DataAccessException(e.getMessage());
+        }
     }
 
     @Override
     public void clear() {
+        try (Connection conn = DatabaseManager.getConnection()) {
+            String update = "TRUNCATE authData";
+            PreparedStatement stmt = conn.prepareStatement(update);
+            stmt.executeUpdate();
+        }
+        catch (Exception e) {
 
+        }
     }
 }
