@@ -2,27 +2,25 @@ package dataAccess;
 
 import model.AuthData;
 
+import java.sql.*;
+import java.util.UUID;
+
 public class SQLAuthDAO implements AuthDAO{
 
-    public SQLAuthDAO() throws DataAccessException{
-        DatabaseManager.createDatabase();
+    public SQLAuthDAO() throws Exception{
+        configureDatabase();
     }
 
     private final String[] createStatements = {
             """
-            CREATE TABLE IF NOT EXISTS  auth (
-              `id` int NOT NULL AUTO_INCREMENT,
-              `name` varchar(256) NOT NULL,
-              `type` ENUM('CAT', 'DOG', 'FISH', 'FROG', 'ROCK') DEFAULT 'CAT',
-              `json` TEXT DEFAULT NULL,
-              PRIMARY KEY (`id`),
-              INDEX(type),
-              INDEX(name)
-            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
+            CREATE TABLE IF NOT EXISTS `authData` (
+              `authToken` varchar(255) PRIMARY KEY NOT NULL,
+              `username` varchar(255) NOT NULL
+            )
             """
     };
 
-    private void configureDatabase() throws Exception {
+    private void configureDatabase() throws DataAccessException {
         DatabaseManager.createDatabase();
         try (var conn = DatabaseManager.getConnection()) {
             for (var statement : createStatements) {
@@ -31,16 +29,30 @@ public class SQLAuthDAO implements AuthDAO{
                 }
             }
         }
+        catch (Exception e){
+            throw new DataAccessException(e.getMessage());
+        }
     }
 
 
 
     @Override
     public AuthData createAuth(String username) throws DataAccessException {
-        return null;
+        try (Connection conn = DatabaseManager.getConnection()) {
+            String sql = "INSERT INTO authData (authToken, authData) VALUES (?, ?)";
+            PreparedStatement stmt = conn.prepareStatement(sql);
+            String authToken = UUID.randomUUID().toString();
+            AuthData authData = new AuthData(authToken, username);
+            stmt.setString(1, authToken);
+            stmt.setString(2, username);
+            stmt.executeUpdate();
+            return authData;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
-    @Override
+        @Override
     public AuthData getAuth(String token) throws DataAccessException {
         return null;
     }

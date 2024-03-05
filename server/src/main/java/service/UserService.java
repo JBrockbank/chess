@@ -2,20 +2,33 @@ package service;
 
 import dataAccess.DataAccessException;
 import dataAccess.MemoryUserDAO;
+import dataAccess.SQLUserDAO;
 import dataAccess.UserDAO;
 import model.UserData;
+
+import java.sql.SQLException;
 
 public class UserService {
 
     public UserDAO userDAO;
 
-    public  UserService(){
-        userDAO = new MemoryUserDAO();
+    public  UserService() {
+        try {
+            userDAO = new SQLUserDAO();
+        }
+        catch (Exception e) {
+
+        }
     }
 
     public Object addUser(UserData user) throws DataAccessException{
-        userDAO.addUser(user);
-        return null;
+        try {
+            userDAO.addUser(user);
+            return null;
+        }
+        catch (Exception e){
+            throw new DataAccessException(e.getMessage());
+        }
     }
 
     public boolean verifyUser(UserData user) throws DataAccessException{

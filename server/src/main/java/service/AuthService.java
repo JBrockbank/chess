@@ -15,7 +15,7 @@ public class AuthService {
         try {
             authDAO = new SQLAuthDAO();
         } catch (Exception e) {
-
+            throw new DataAccessException(e.getMessage());
         }
     }
 
