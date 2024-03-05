@@ -20,6 +20,9 @@ public class Handler {
     AuthService authService = new AuthService();
     Gson serializer = new Gson();
 
+    public Handler() throws DataAccessException {
+    }
+
     public Object handle(Request req, Response res) throws Exception{
         throw new Exception("Not Implemented");
     }

@@ -1,10 +1,14 @@
 package server.handlers;
 
 import com.google.gson.Gson;
+import dataAccess.DataAccessException;
 import spark.Request;
 import spark.Response;
 
 public class LogoutHandler extends Handler{
+
+    public LogoutHandler() throws DataAccessException {
+    }
 
     public Object handle(Request req, Response res){
         try {

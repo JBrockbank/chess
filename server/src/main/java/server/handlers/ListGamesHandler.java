@@ -1,6 +1,7 @@
 package server.handlers;
 
 import com.google.gson.Gson;
+import dataAccess.DataAccessException;
 import model.GameData;
 import server.responses.GameListResponse;
 import spark.Request;
@@ -8,6 +9,9 @@ import spark.Response;
 import java.util.Collection;
 
 public class ListGamesHandler extends Handler{
+
+    public ListGamesHandler() throws DataAccessException {
+    }
 
     public Object handle(Request req, Response res){
         try {

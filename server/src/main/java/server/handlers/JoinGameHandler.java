@@ -2,6 +2,7 @@ package server.handlers;
 
 import chess.ChessGame;
 import com.google.gson.Gson;
+import dataAccess.DataAccessException;
 import model.AuthData;
 import model.GameData;
 import model.UserData;
@@ -11,6 +12,9 @@ import spark.Response;
 import java.util.Map;
 
 public class JoinGameHandler extends Handler{
+
+    public JoinGameHandler() throws DataAccessException {
+    }
 
     @Override
     public Object handle(Request req, Response res) throws Exception {

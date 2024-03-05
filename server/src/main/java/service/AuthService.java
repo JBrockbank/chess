@@ -3,6 +3,7 @@ package service;
 import dataAccess.AuthDAO;
 import dataAccess.DataAccessException;
 import dataAccess.MemoryAuthDAO;
+import dataAccess.SQLAuthDAO;
 import model.AuthData;
 import model.UserData;
 
@@ -10,8 +11,12 @@ public class AuthService {
 
     public static AuthDAO authDAO;
 
-    public AuthService(){
-        authDAO = new MemoryAuthDAO();
+    public AuthService() throws DataAccessException {
+        try {
+            authDAO = new SQLAuthDAO();
+        } catch (Exception e) {
+
+        }
     }
 
     public AuthData newToken(String username) throws DataAccessException{

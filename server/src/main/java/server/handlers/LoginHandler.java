@@ -10,6 +10,9 @@ import spark.Response;
 
 public class LoginHandler extends Handler{
 
+    public LoginHandler() throws DataAccessException {
+    }
+
     public Object handle(Request req, Response res) throws DataAccessException{
         try {
             UserData userData = new Gson().fromJson(req.body(), UserData.class);

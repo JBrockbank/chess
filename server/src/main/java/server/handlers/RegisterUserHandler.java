@@ -1,6 +1,7 @@
 package server.handlers;
 
 import com.google.gson.Gson;
+import dataAccess.DataAccessException;
 import model.AuthData;
 import model.UserData;
 import server.responses.RegisterUserResponse;
@@ -8,6 +9,9 @@ import spark.Request;
 import spark.Response;
 
 public class RegisterUserHandler extends Handler{
+
+    public RegisterUserHandler() throws DataAccessException {
+    }
 
     public Object handle(Request req, Response res){
         try {

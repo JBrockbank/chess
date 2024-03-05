@@ -21,6 +21,9 @@ public class AuthServiceTests {
     AuthService authService = new AuthService();
     UserService userService = new UserService();
 
+    public AuthServiceTests() throws DataAccessException {
+    }
+
     @BeforeEach
     void clear(){
         authService.clear();
