@@ -4,9 +4,7 @@ import chess.ChessGame;
 import com.google.gson.Gson;
 import model.GameData;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.Collection;
 
 public class SQLGameDAO implements GameDAO{
@@ -25,17 +23,21 @@ public class SQLGameDAO implements GameDAO{
         game.getBoard().resetBoard();
         Gson serializer = new Gson();
         try (Connection conn = DatabaseManager.getConnection()) {
-            String update = "INSERT (gameName, game) into gameData";
-            PreparedStatement stmt = conn.prepareStatement(update);
+            String update = "INSERT into gameData (whiteUsername, blackUsername, gameName, game) VALUES (default, default, ?, ?)";
+            PreparedStatement stmt = conn.prepareStatement(update, Statement.RETURN_GENERATED_KEYS);
             stmt.setString(1, gameName);
             stmt.setString(2, serializer.toJson(game));
             stmt.executeUpdate();
-            
+            try (ResultSet generatedKeys = stmt.getGeneratedKeys()) {
+                if (generatedKeys.next()) {
+                    return generatedKeys.getInt(1);
+                }
+            }
         }
         catch (Exception e) {
 
         }
-
+        return 0;
     }
 
     @Override
@@ -63,6 +65,7 @@ public class SQLGameDAO implements GameDAO{
         try (var conn = DatabaseManager.getConnection()) {
             String update = "TRUNCATE gameData";
             PreparedStatement stmt = conn.prepareStatement(update);
+            stmt.executeUpdate();
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -86,8 +89,8 @@ public class SQLGameDAO implements GameDAO{
             """
             CREATE TABLE IF NOT EXISTS `gameData` (
               `gameID` int NOT NULL AUTO_INCREMENT,
-              `whiteUsername` varchar(255),
-              `blackUsername` varchar(255),
+              `whiteUsername` varchar(255) DEFAULT NULL,
+              `blackUsername` varchar(255) DEFAULT NULL,
               `gameName` varchar(255) NOT NULL,
               `game` JSON NOT NULL,
               PRIMARY KEY (`gameID`)
