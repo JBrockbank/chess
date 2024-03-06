@@ -91,4 +91,21 @@ public class GameServiceTests2 {
         UserData user = new UserData("u", "p", "e");
         assertFalse(userService.verifyUser(user));
     }
+
+    @Test
+    void getGameTest() throws Exception {
+        int id = gameService.createGame("game1");
+        GameData game = gameService.getGame(id);
+        assertEquals(game.gameName(), "game1");
+
+    }
+
+    @Test
+    void getGameTestFail() throws Exception {
+        DataAccessException exception = assertThrows(DataAccessException.class, () -> {
+            GameData game = gameService.getGame(1);
+        });
+        assertTrue(exception.getMessage().contains("bad request"));
+    }
+
 }
