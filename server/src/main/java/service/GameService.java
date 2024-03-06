@@ -22,7 +22,7 @@ public class GameService {
         }
     }
 
-    public Collection<GameData> ListGames(){
+    public Collection<GameData> ListGames() throws DataAccessException{
         return gameDAO.getAllGames();
     }
 

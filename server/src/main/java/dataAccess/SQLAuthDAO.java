@@ -63,7 +63,7 @@ public class SQLAuthDAO implements AuthDAO{
                 throw new DataAccessException("Error: unauthorized");
             }
             String username = rs.getString("username");
-            return new AuthData(username, token);
+            return new AuthData(token, username);
         }
         catch (Exception e) {
             throw new DataAccessException(e.getMessage());
