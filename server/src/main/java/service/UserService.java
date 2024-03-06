@@ -24,7 +24,13 @@ public class UserService {
 
     public Object addUser(UserData user) throws DataAccessException{
         try {
-            userDAO.addUser(user);
+            String password = user.password();
+            if (password == null){
+                throw new DataAccessException("Error: bad request");
+            }
+            String hash = hashpassword(password);
+            UserData newUser = new UserData(user.username(), hash, user.email());
+            userDAO.addUser(newUser);
             return null;
         }
         catch (Exception e){
@@ -39,7 +45,7 @@ public class UserService {
         if (existingUser == null) {
             return false;
         }
-        else if (existingUser.password().equals(password)){
+        else if (new BCryptPasswordEncoder().matches(password, existingUser.password())){
             return true;
         }
         else {
@@ -48,12 +54,13 @@ public class UserService {
 
     }
 
-    public UserData hashpassword(UserData u) {
-        String password = u.password();
+    public String hashpassword(String password) {
         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
         String hashedPassword = encoder.encode(password);
-        return new UserData(u.username(), hashedPassword, u.email());
+        return hashedPassword;
     }
+
+
 
 
     public void clear(){
