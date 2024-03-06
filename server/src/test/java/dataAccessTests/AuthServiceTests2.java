@@ -11,45 +11,45 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class AuthServiceTests2 {
 
-    AuthService authService = new AuthService();
-    UserService userService = new UserService();
+    AuthDAO authDAO = new SQLAuthDAO();
+    UserDAO userDAO = new SQLUserDAO();
 
-    public AuthServiceTests2() throws DataAccessException {
+    public AuthServiceTests2() throws Exception {
     }
 
     @BeforeEach
     void clear(){
-        authService.clear();
-        userService.clear();
+        authDAO.clear();
+        userDAO.clear();
     }
 
     @Test
     void newTokenTest() throws Exception {
-        AuthData authData = authService.newToken("user");
-        AuthData authData2 = authService.getAuthData(authData.authToken());
+        AuthData authData = authDAO.createAuth("user");
+        AuthData authData2 = authDAO.getAuth(authData.authToken());
         assertEquals(authData.authToken(), authData2.authToken());
     }
 
     @Test
     void newTokenTestFail() throws Exception {
-        AuthData authData = authService.newToken("user");
+        AuthData authData = authDAO.createAuth("user");
         String token = authData.authToken();
-        AuthData authData2 = authService.newToken("user2");
+        AuthData authData2 = authDAO.createAuth("user2");
         String token2 = authData2.authToken();
         assertNotEquals(token, token2);
     }
 
     @Test
     void getAuthDataTest() throws Exception {
-        AuthData authData = authService.newToken("user");
-        AuthData authData2 = authService.getAuthData(authData.authToken());
+        AuthData authData = authDAO.createAuth("user");
+        AuthData authData2 = authDAO.getAuth(authData.authToken());
         assertEquals(authData, authData2);
     }
 
     @Test
     void getAuthDataTestFail() throws Exception {
         DataAccessException exception = assertThrows(DataAccessException.class, () -> {
-            authService.getAuthData("not an auth token");
+            authDAO.getAuth("not an auth token");
         });
         assertTrue(exception.getMessage().contains("unauthorized"));
     }
@@ -57,10 +57,10 @@ public class AuthServiceTests2 {
     @Test
     void deleteTest() throws Exception {
         DataAccessException exception = assertThrows(DataAccessException.class, () -> {
-            AuthData authData = authService.newToken("user");
+            AuthData authData = authDAO.createAuth("user");
             String token = authData.authToken();
-            authService.delete(token);
-            authService.getAuthData(token);
+            authDAO.deleteAuth(token);
+            authDAO.getAuth(token);
         });
         assertTrue(exception.getMessage().contains("unauthorized"));
     }
@@ -68,7 +68,7 @@ public class AuthServiceTests2 {
     @Test
     void deleteTestFail() throws Exception {
         DataAccessException exception = assertThrows(DataAccessException.class, () -> {
-            authService.delete("not an auth token");
+            authDAO.deleteAuth("not an auth token");
         });
         assertTrue(exception.getMessage().contains("unauthorized"));
     }
@@ -76,7 +76,7 @@ public class AuthServiceTests2 {
     @Test
     void clearTest() throws Exception {
         assertDoesNotThrow(() -> {
-            authService.clear();
+            authDAO.clear();
         });
     }
 }

@@ -11,11 +11,19 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class UserServiceTest2 {
 
-    static final UserService userService = new UserService();
+    static UserDAO userDAO;
+
+    static {
+        try {
+            userDAO = new SQLUserDAO();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     @BeforeEach
     void clear(){
-        userService.clear();
+        userDAO.clear();
     }
 
     @Test
@@ -24,13 +32,13 @@ public class UserServiceTest2 {
             var user1 = new UserData("user1", "pass1", "email1");
             var user2 = new UserData("user2", "pass2", "email2");
             var user3 = new UserData("user3", "pass3", "email3");
-            userService.addUser(user1);
-            userService.addUser(user2);
-            userService.addUser(user3);
+            userDAO.addUser(user1);
+            userDAO.addUser(user2);
+            userDAO.addUser(user3);
 
-            userService.verifyUser(user1);
-            userService.verifyUser(user2);
-            userService.verifyUser(user3);
+            assertNotNull(userDAO.getUser(user1.username()));
+            assertEquals(userDAO.getUser(user2.username()), user2);
+            assertNotNull(userDAO.getUser(user1.username()));
         });
     }
 
@@ -38,29 +46,29 @@ public class UserServiceTest2 {
     void addUserFail() throws DataAccessException{
         DataAccessException exception = assertThrows(DataAccessException.class, () -> {
             var user1 = new UserData("user1", null, "email1");
-            userService.addUser(user1);
+            userDAO.addUser(user1);
         });
         assertTrue(exception.getMessage().contains("bad request"));
     }
 
     @Test
-    void verifyUserTest() throws DataAccessException {
+    void verifyUserTest() throws Exception {
         var user1 = new UserData("user1", "pass1", "email1");
-        userService.addUser(user1);
-        assertTrue(userService.verifyUser(user1));
+        userDAO.addUser(user1);
+        assertEquals(userDAO.getUser(user1.username()), user1) ;
     }
 
     @Test
     void verifyUserTestFail() throws DataAccessException {
         var user2 = new UserData("user2", "pass2", "email2");
-        assertFalse(userService.verifyUser(user2));
+        assertNotEquals(userDAO.getUser(user2.username()), "user2");
     }
     @Test
     void clearTest(){
         assertDoesNotThrow(() -> {
-            userService.clear();
+            userDAO.clear();
         });
-        assertTrue(userService.userDAO.getUserList() == null);
+        assertTrue(userDAO.getUserList() == null);
     }
 
 
