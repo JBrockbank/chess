@@ -20,12 +20,18 @@ public class UserServiceTest {
 
     @Test
     void addUser() throws Exception{
-        var user1 = new UserData("user1", "pass1", "email1");
-        var user2 = new UserData("user2", "pass2", "email2");
-        var user3 = new UserData("user3", "pass3", "email3");
-        userService.addUser(user1);
-        userService.addUser(user2);
-        userService.addUser(user3);
+        assertDoesNotThrow(() -> {
+            var user1 = new UserData("user1", "pass1", "email1");
+            var user2 = new UserData("user2", "pass2", "email2");
+            var user3 = new UserData("user3", "pass3", "email3");
+            userService.addUser(user1);
+            userService.addUser(user2);
+            userService.addUser(user3);
+
+            userService.verifyUser(user1);
+            userService.verifyUser(user2);
+            userService.verifyUser(user3);
+        });
     }
 
     @Test
@@ -46,15 +52,15 @@ public class UserServiceTest {
 
     @Test
     void verifyUserTestFail() throws DataAccessException {
-        DataAccessException exception = assertThrows(DataAccessException.class, () -> {
-            var user2 = new UserData("user2", "pass2", "email2");
-            userService.verifyUser(user2);
-        });
-        assertTrue(exception.getMessage().contains("unauthorized"));
+        var user2 = new UserData("user2", "pass2", "email2");
+        assertFalse(userService.verifyUser(user2));
     }
     @Test
     void clearTest(){
-        userService.clear();
+        assertDoesNotThrow(() -> {
+            userService.clear();
+        });
+        assertTrue(userService.userDAO.getUserList() == null);
     }
 
 

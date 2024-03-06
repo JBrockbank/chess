@@ -33,8 +33,8 @@ public class AuthServiceTests {
     @Test
     void newTokenTest() throws Exception {
         AuthData authData = authService.newToken("user");
-        String token = authData.authToken();
-        assertNotNull(token);
+        AuthData authData2 = authService.getAuthData(authData.authToken());
+        assertEquals(authData.authToken(), authData2.authToken());
     }
 
     @Test
@@ -82,6 +82,8 @@ public class AuthServiceTests {
 
     @Test
     void clearTest() throws Exception {
-        authService.clear();;
+        assertDoesNotThrow(() -> {
+            authService.clear();
+        });
     }
 }

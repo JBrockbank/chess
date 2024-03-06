@@ -26,6 +26,10 @@ public class GameService {
         return gameDAO.getAllGames();
     }
 
+    public GameData getGame(int gameID) throws DataAccessException {
+        return gameDAO.getGame(gameID);
+    }
+
     public int createGame(String gameName)throws DataAccessException{
         return gameDAO.createGame(gameName);
     }

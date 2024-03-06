@@ -25,8 +25,12 @@ public class GameServiceTests {
     }
 
     @Test
-    void clearTest(){
-        gameService.clear();
+    void clearTest() throws DataAccessException {
+        assertDoesNotThrow(() -> {
+            gameService.clear();
+        });
+        assertTrue(gameService.gameDAO.getAllGames().size() == 0);
+
     }
 
     @Test
@@ -37,22 +41,25 @@ public class GameServiceTests {
 
     @Test
     void createGameTestFail() throws Exception{
-        DataAccessException exception = assertThrows(DataAccessException.class, () -> {
-            gameService.createGame("game1");
-            UserData user = new UserData("user", "pass", "email");
-            userService.verifyUser(user);
-        });
-        assertTrue(exception.getMessage().contains("unauthorized"));
+        gameService.createGame("game1");
+        UserData user = new UserData("user", "pass", "email");
+        userService.verifyUser(user);
+        assertFalse(userService.verifyUser(user));
     }
 
     @Test
     void joinGameTest() throws Exception {
         gameService.createGame("game1");
+        ChessGame game = new ChessGame();
+        game.getBoard().resetBoard();
+        GameData testGame = new GameData(1, "user", "user", "game1", game);
         UserData user = new UserData("user", "pass", "email");
         userService.addUser(user);
         gameService.joinGame(1, "WHITE", user.username());
         gameService.joinGame(1, "BLACK", user.username());
         gameService.joinGame(1, "", user.username());
+        assertEquals(gameService.getGame(1).blackUsername(), testGame.blackUsername());
+        assertEquals(gameService.getGame(1).whiteUsername(), testGame.whiteUsername());
     }
 
     @Test
@@ -79,12 +86,9 @@ public class GameServiceTests {
 
     @Test
     void listGamesTestFail() throws Exception {
-        DataAccessException exception = assertThrows(DataAccessException.class, () -> {
-            gameService.createGame("game1");
-            Collection<GameData> gameList = gameService.ListGames();
-            UserData user = new UserData("u", "p", "e");
-            userService.verifyUser(user);
-        });
-        assertTrue(exception.getMessage().contains("unauthorized"));
+        gameService.createGame("game1");
+        Collection<GameData> gameList = gameService.ListGames();
+        UserData user = new UserData("u", "p", "e");
+        assertFalse(userService.verifyUser(user));
     }
 }

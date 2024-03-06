@@ -72,6 +72,9 @@ public class SQLAuthDAO implements AuthDAO{
 
     @Override
     public void deleteAuth(String token) throws DataAccessException {
+        if (getAuth(token) == null){
+            throw new DataAccessException("Error: unauthorized");
+        }
         try (Connection conn = DatabaseManager.getConnection()) {
             String update = "DELETE FROM authData WHERE authToken = ?";
             PreparedStatement stmt = conn.prepareStatement(update);
