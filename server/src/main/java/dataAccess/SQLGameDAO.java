@@ -90,10 +90,8 @@ public class SQLGameDAO implements GameDAO{
         }
     }
 
-    @Override
-    public void deleteGame(int gameID) throws DataAccessException {
 
-    }
+
 
     @Override
     public Collection<GameData> getAllGames() throws DataAccessException {
