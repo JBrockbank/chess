@@ -6,9 +6,7 @@ public class Main {
         Server s = new Server();
         s.run(8080);
 //        var piece = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.PAWN);
-        var board = new ChessBoard();
-        board.resetBoard();
-        System.out.println("♕ 240 Chess Server: \n" + board);
+        System.out.println("Server Running");
     }
 }
 

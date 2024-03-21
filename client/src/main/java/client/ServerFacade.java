@@ -4,9 +4,12 @@ import com.google.gson.Gson;
 
 import com.google.gson.Gson;
 import model.UserData;
+import server.responses.*;
 
 import java.io.*;
 import java.net.*;
+
+
 
 public class ServerFacade {
 
@@ -20,7 +23,15 @@ public class ServerFacade {
     public void signIn(String username, String password) throws Exception{
         var path = "/session";
         UserData user = new UserData(username, password, null);
-        this.makeRequest("GET", path, user, null);
+        RegisterUserResponse res = this.makeRequest("GET", path, user, RegisterUserResponse.class);
+        System.out.println(res.toString());
+    }
+
+    public void register(String username, String password, String email) throws Exception {
+        var path = "/user";
+        UserData user = new UserData(username, password, email);
+        RegisterUserResponse res = this.makeRequest("POST", path, user, RegisterUserResponse.class);
+        System.out.println(res.toString());
     }
 
 
@@ -29,7 +40,9 @@ public class ServerFacade {
             URL url = (new URI(serverUrl + path)).toURL();
             HttpURLConnection http = (HttpURLConnection) url.openConnection();
             http.setRequestMethod(method);
-            http.setDoOutput(true);
+            if (request != null){
+                http.setDoOutput(true);
+            }
             writeBody(request, http);
             http.connect();
             throwIfNotSuccessful(http);
@@ -52,7 +65,7 @@ public class ServerFacade {
     private void throwIfNotSuccessful(HttpURLConnection http) throws IOException, Exception {
         var status = http.getResponseCode();
         if (!isSuccessful(status)) {
-            throw new Exception("Error: bad request");
+            throw new Exception("Error: Not successful");
         }
     }
 
@@ -74,6 +87,8 @@ public class ServerFacade {
     private boolean isSuccessful(int status) {
         return status / 100 == 2;
     }
+
+
 }
 
 

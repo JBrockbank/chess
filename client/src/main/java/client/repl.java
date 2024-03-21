@@ -2,6 +2,8 @@ package client;
 
 
 
+import server.Server;
+
 import java.util.Scanner;
 import static ui.EscapeSequences.*;
 
@@ -15,7 +17,7 @@ public class repl{
     }
 
     public void run() {
-        System.out.println("\uD83D\uDC36 Welcome to the CS 240 Chess. Sign in to start.");
+        System.out.println(WHITE_QUEEN + "Welcome to the CS 240 Chess. Sign in to start.");
         System.out.print(client.help());
 
         Scanner scanner = new Scanner(System.in);
@@ -31,6 +33,7 @@ public class repl{
                 var msg = e.toString();
                 System.out.print(msg);
             }
+
         }
         System.out.println();
     }

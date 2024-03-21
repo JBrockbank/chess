@@ -14,6 +14,9 @@ public class RegisterUserHandler extends Handler{
     }
 
     public Object handle(Request req, Response res){
+
+        System.out.println("Register Handler");
+
         try {
             var newUser = new Gson().fromJson(req.body(), UserData.class);
             userService.addUser(newUser);

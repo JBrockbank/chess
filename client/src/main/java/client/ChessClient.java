@@ -23,7 +23,7 @@ public class ChessClient {
             var params = Arrays.copyOfRange(tokens, 1, tokens.length);
             return switch (cmd) {
                 case "signin" -> signIn(params);
-//                case "rescue" -> rescuePet(params);
+                case "register" -> register(params);
 //                case "list" -> listPets();
 //                case "signout" -> signOut();
 //                case "adopt" -> adoptPet(params);
@@ -46,12 +46,12 @@ public class ChessClient {
                     """;
         }
         return """
-                - list
-                - adopt <pet id>
-                - rescue <name> <CAT|DOG|FROG|FISH>
-                - adoptAll
-                - signOut
-                - quit
+                - help
+                - logout
+                - create game <game name>
+                - list games
+                - join game <game ID>
+                - join observer <game ID>
                 """;
     }
 
@@ -62,7 +62,32 @@ public class ChessClient {
             server.signIn(username, password);
             state = State.SIGNEDIN;
         }
-        throw new Exception("Error: Expected <username> <password>");
+        else {
+            throw new Exception("Error: Expected <username> <password>");
+
+        }
+        return "User Logged In.";
+    }
+
+    public String register(String... params) throws Exception {
+        if (params.length >= 3) {
+            String username = params[0];
+            String password = params[1];
+            String email = params[2];
+            server.register(username, password, email);
+            state = State.SIGNEDIN;
+        }
+        else {
+            throw new Exception("Error: Expected <username> <password> <email>");
+
+        }
+        return "New User Created.";
+    }
+
+    public void assertSignedIn() throws Exception{
+        if (state == State.SIGNEDOUT){
+            throw new Exception("User must be signed in first");
+        }
     }
 
 

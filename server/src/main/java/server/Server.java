@@ -28,6 +28,7 @@ public class Server {
     }
 
     private static void createRoutes() {
+        System.out.println("Creating Routes");
         Spark.delete("/db", (req, res) -> new ClearAllHandler().handle(req, res));
         Spark.post("/user", (req, res) -> new RegisterUserHandler().handle(req, res));
         Spark.post("/session", (req, res) -> new LoginHandler().handle(req, res));
