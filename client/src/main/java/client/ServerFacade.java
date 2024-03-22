@@ -12,7 +12,7 @@ import server.responses.*;
 
 import java.io.*;
 import java.net.*;
-
+import java.util.Collection;
 
 
 public class ServerFacade {
@@ -29,7 +29,6 @@ public class ServerFacade {
         var path = "/session";
         UserData user = new UserData(username, password, null);
         RegisterUserResponse res = this.makeRequest("GET", path, user, RegisterUserResponse.class);
-        System.out.println(res.toString());
         authToken = res.authToken;
     }
 
@@ -51,12 +50,19 @@ public class ServerFacade {
     public GameData joinGame(int gameID, String color) throws Exception {
         var path = "/game";
         var req = new JoinGameData(color, gameID);
+        System.out.println("JG");
         return this.makeRequest("PUT", path, req, GameData.class);
     }
 
     public void logout() throws Exception {
         var path = "/session";
         this.makeRequest("DELETE", path, null, BaseResponse.class);
+    }
+
+    public Collection<GameData> listGames() throws Exception {
+        var path = "/game";
+        GameListResponse res = this.makeRequest("GET", path, null, GameListResponse.class);
+        return res.games;
     }
 
 
@@ -75,8 +81,11 @@ public class ServerFacade {
             writeBody(request, http);
             http.connect();
             throwIfNotSuccessful(http);
-            return readBody(http, responseClass);
+            var res = readBody(http, responseClass);
+            return res;
         } catch (Exception ex) {
+            System.out.println("makeRequest Exception Thrown");
+
             throw new Exception(ex.getMessage());
         }
     }
@@ -103,9 +112,14 @@ public class ServerFacade {
         T response = null;
         if (http.getContentLength() < 0) {
             try (InputStream respBody = http.getInputStream()) {
+                System.out.println("Here0");
                 InputStreamReader reader = new InputStreamReader(respBody);
                 if (responseClass != null) {
+//                    System.out.println("Here");
+//                    System.out.println("Response Body: " + readerToString(reader));
                     response = new Gson().fromJson(reader, responseClass);
+                    System.out.println("Here1");
+
                 }
             }
         }
@@ -115,6 +129,16 @@ public class ServerFacade {
 
     private boolean isSuccessful(int status) {
         return status / 100 == 2;
+    }
+
+
+    private static String readerToString(InputStreamReader reader) throws IOException {
+        StringBuilder sb = new StringBuilder();
+        int c;
+        while ((c = reader.read()) != -1) {
+            sb.append((char) c);
+        }
+        return sb.toString();
     }
 
 

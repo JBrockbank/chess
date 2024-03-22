@@ -23,15 +23,19 @@ public class JoinGameHandler extends Handler{
             authenticate(authToken);
             AuthData authData = authService.getAuthData(authToken);
             String username = authData.username();
+            System.out.println("JGH");
             Gson gson = new Gson();
             Map<String, Object> requestBody = gson.fromJson(req.body(), Map.class);
             String playerColor = (String) requestBody.get("playerColor");
+            System.out.println("JGH2");
             double dgameID = (double) requestBody.get("gameID");
             int gameID = (int) dgameID;
-            gameService.joinGame(gameID, playerColor, username);
+            GameData gameData = gameService.joinGame(gameID, playerColor, username);
             res.status(200);
-            return "{}";
+            System.out.println("JGH3");
+            return new Gson().toJson(gameData);
         } catch (Exception e) {
+            System.out.println("JGH Exception");
             return evalException(req, res, e);
 
         }

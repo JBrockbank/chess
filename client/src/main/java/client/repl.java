@@ -17,6 +17,7 @@ public class repl{
     }
 
     public void run() {
+        System.out.print(RESET_BG_COLOR);
         System.out.println(WHITE_QUEEN + "Welcome to the CS 240 Chess. Sign in to start.");
         System.out.print(client.help());
 
@@ -44,7 +45,7 @@ public class repl{
 //    }
 
     private void printPrompt() {
-        System.out.print("\n" + SET_TEXT_COLOR_BLACK + ">>> " + SET_TEXT_COLOR_GREEN);
+        System.out.print("\n" + SET_TEXT_COLOR_WHITE + ">>> " + SET_TEXT_COLOR_GREEN);
     }
 
 }

@@ -37,6 +37,7 @@ public class GameService {
     public GameData joinGame(int gameID, String playerColor, String username) throws DataAccessException{
         GameData gameData = gameDAO.getGame(gameID);
         GameData newGameData = gameData;
+        System.out.println("GS");
         if(playerColor.equals("empty") || playerColor.isEmpty()){
 
         }
@@ -61,6 +62,8 @@ public class GameService {
         else {
             throw new DataAccessException("Error: bad request");
         }
+        System.out.println("Returning GS");
+        System.out.println(newGameData.toString());
         return newGameData;
     }
 
