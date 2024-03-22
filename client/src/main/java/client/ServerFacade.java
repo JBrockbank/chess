@@ -4,11 +4,12 @@ import chess.ChessGame;
 import com.google.gson.Gson;
 
 import com.google.gson.Gson;
+import model.AuthData;
 import model.GameData;
 import model.JoinGameData;
 import model.UserData;
 import org.glassfish.grizzly.http.server.Request;
-import server.responses.*;
+import responses.*;
 
 import java.io.*;
 import java.net.*;
@@ -20,24 +21,28 @@ public class ServerFacade {
     private final String serverUrl;
     private String authToken;
 
-    public ServerFacade(String url) {
+    public ServerFacade(int urlPort) {
+        String url = "http://localhost:";
+        url += String.valueOf(urlPort);
         serverUrl = url;
     }
 
 
-    public void signIn(String username, String password) throws Exception{
+    public String signIn(String username, String password) throws Exception{
         var path = "/session";
         UserData user = new UserData(username, password, null);
-        RegisterUserResponse res = this.makeRequest("GET", path, user, RegisterUserResponse.class);
+        RegisterUserResponse res = this.makeRequest("POST", path, user, RegisterUserResponse.class);
         authToken = res.authToken;
+        return authToken;
     }
 
-    public void register(String username, String password, String email) throws Exception {
+    public String register(String username, String password, String email) throws Exception {
         var path = "/user";
         UserData user = new UserData(username, password, email);
         RegisterUserResponse res = this.makeRequest("POST", path, user, RegisterUserResponse.class);
         System.out.println(res.toString());
         authToken = res.authToken;
+        return authToken;
     }
 
     public void createGame(String name) throws Exception {
@@ -66,8 +71,13 @@ public class ServerFacade {
 
     public GameData observeGame(int gameID) throws Exception {
         var path = "/game";
-        var req = new JoinGameData(null, gameID);
+        var req = new JoinGameData("empty", gameID);
         return this.makeRequest("PUT", path, req, GameData.class);
+    }
+
+    public void clearDB() throws Exception {
+        var path = "/db";
+        this.makeRequest("DELETE", path, null, null);
     }
 
 
@@ -117,13 +127,11 @@ public class ServerFacade {
         T response = null;
         if (http.getContentLength() < 0) {
             try (InputStream respBody = http.getInputStream()) {
-                System.out.println("Here0");
                 InputStreamReader reader = new InputStreamReader(respBody);
                 if (responseClass != null) {
 //                    System.out.println("Here");
 //                    System.out.println("Response Body: " + readerToString(reader));
                     response = new Gson().fromJson(reader, responseClass);
-                    System.out.println("Here1");
 
                 }
             }

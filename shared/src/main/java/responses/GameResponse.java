@@ -1,4 +1,4 @@
-package server.responses;
+package responses;
 
 public class GameResponse extends BaseResponse{
 

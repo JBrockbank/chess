@@ -26,7 +26,7 @@ public class ChessClient {
     private State state = State.SIGNEDOUT;
 
     public ChessClient(String serverUrl) {
-        server = new ServerFacade(serverUrl);
+        server = new ServerFacade(8080);
         this.serverUrl = serverUrl;
     }
 
@@ -43,6 +43,7 @@ public class ChessClient {
                 case "joingame" -> joinGame(params);
                 case "listgames" -> listGames();
                 case "observegame" -> observeGame(params);
+                case "quit" -> "quit";
                 default -> help();
             };
         } catch (Exception ex) {
@@ -65,9 +66,11 @@ public class ChessClient {
                 - createGame <game name>
                 - listGames
                 - joinGame <game ID> <player color>
-                - joinObserver <game ID>
+                - observeGame <game ID>
                 """;
     }
+
+
 
     public String signIn(String... params) throws Exception{
         if (params.length >= 2){
@@ -276,7 +279,7 @@ public class ChessClient {
             }
             out.print(RESET_BG_COLOR);
         }
-
+        out.print(SET_TEXT_COLOR_WHITE);
         out.print("\n  H ");
         out.print(" G ");
         out.print(" F ");

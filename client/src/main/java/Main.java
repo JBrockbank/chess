@@ -1,5 +1,4 @@
 import chess.*;
-import server.Server;
 import client.repl;
 
 
@@ -10,4 +9,5 @@ public class Main {
         var serverUrl = "http://localhost:8080";
         new repl(serverUrl).run();
     }
+
 }

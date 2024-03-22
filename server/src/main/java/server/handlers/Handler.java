@@ -1,13 +1,9 @@
 package server.handlers;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonObject;
 import dataAccess.DataAccessException;
-import dataAccess.GameDAO;
-import dataAccess.MemoryGameDAO;
 import model.AuthData;
-import model.UserData;
-import server.responses.ErrorResponse;
+import responses.ErrorResponse;
 import spark.Request;
 import spark.Response;
 import service.*;

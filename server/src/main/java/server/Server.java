@@ -2,7 +2,7 @@ package server;
 
 import dataAccess.DataAccessException;
 import server.handlers.*;
-import spark.*;
+import spark.Spark;
 
 
 public class Server {
@@ -16,12 +16,7 @@ public class Server {
         Spark.staticFiles.location("web");
 
         // Register your endpoints and handle exceptions here.
-
         createRoutes();
-
-
-
-
         Spark.init();
         Spark.awaitInitialization();
         return Spark.port();
@@ -38,6 +33,9 @@ public class Server {
         Spark.put("/game", (req, res) -> new JoinGameHandler().handle(req, res));
 
     }
+
+
+
 
 
     public void stop() {

@@ -1,4 +1,4 @@
-package server.responses;
+package responses;
 
 import com.google.gson.Gson;
 
