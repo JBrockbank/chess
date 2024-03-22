@@ -42,7 +42,7 @@ public class ChessClient {
                 case "logout" -> logout();
                 case "joingame" -> joinGame(params);
                 case "listgames" -> listGames();
-//                case "quit" -> "quit";
+                case "observegame" -> observeGame(params);
                 default -> help();
             };
         } catch (Exception ex) {
@@ -135,9 +135,32 @@ public class ChessClient {
             String playerColor = params[1];
             int ID = 0;
             ID = Integer.parseInt(gameIndex);
+            if (ID > gameDataList.size()){
+                throw new Exception("Game doesn't exist");
+            }
             int gameID = gameDataList.get(ID-1).gameID();
             playerColor = playerColor.toUpperCase();
             GameData gameData = server.joinGame(gameID, playerColor);
+            displayGame(gameData);
+            return "";
+        }
+        else {
+            throw new Exception("Error: Expected <gameID>");
+        }
+    }
+
+
+    public String observeGame(String...params) throws Exception {
+        assertSignedIn();
+        if (params.length >= 1) {
+            String gameIndex = params[0];
+            int ID = 0;
+            ID = Integer.parseInt(gameIndex);
+            if (ID > gameDataList.size()){
+                throw new Exception("Game doesn't exist");
+            }
+            int gameID = gameDataList.get(ID-1).gameID();
+            GameData gameData = server.observeGame(gameID);
             displayGame(gameData);
             return "";
         }

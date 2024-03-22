@@ -39,7 +39,7 @@ public class GameService {
         GameData newGameData = gameData;
         System.out.println("GS");
         if(playerColor.equals("empty") || playerColor.isEmpty()){
-
+            return newGameData;
         }
         else if (playerColor.equals("WHITE")){
             if (gameData.whiteUsername() == null){

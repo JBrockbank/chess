@@ -50,7 +50,6 @@ public class ServerFacade {
     public GameData joinGame(int gameID, String color) throws Exception {
         var path = "/game";
         var req = new JoinGameData(color, gameID);
-        System.out.println("JG");
         return this.makeRequest("PUT", path, req, GameData.class);
     }
 
@@ -63,6 +62,12 @@ public class ServerFacade {
         var path = "/game";
         GameListResponse res = this.makeRequest("GET", path, null, GameListResponse.class);
         return res.games;
+    }
+
+    public GameData observeGame(int gameID) throws Exception {
+        var path = "/game";
+        var req = new JoinGameData(null, gameID);
+        return this.makeRequest("PUT", path, req, GameData.class);
     }
 
 
