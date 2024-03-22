@@ -1,9 +1,13 @@
 package client;
 
+import chess.ChessGame;
 import com.google.gson.Gson;
 
 import com.google.gson.Gson;
+import model.GameData;
+import model.JoinGameData;
 import model.UserData;
+import org.glassfish.grizzly.http.server.Request;
 import server.responses.*;
 
 import java.io.*;
@@ -14,6 +18,7 @@ import java.net.*;
 public class ServerFacade {
 
     private final String serverUrl;
+    private String authToken;
 
     public ServerFacade(String url) {
         serverUrl = url;
@@ -25,6 +30,7 @@ public class ServerFacade {
         UserData user = new UserData(username, password, null);
         RegisterUserResponse res = this.makeRequest("GET", path, user, RegisterUserResponse.class);
         System.out.println(res.toString());
+        authToken = res.authToken;
     }
 
     public void register(String username, String password, String email) throws Exception {
@@ -32,7 +38,27 @@ public class ServerFacade {
         UserData user = new UserData(username, password, email);
         RegisterUserResponse res = this.makeRequest("POST", path, user, RegisterUserResponse.class);
         System.out.println(res.toString());
+        authToken = res.authToken;
     }
+
+    public void createGame(String name) throws Exception {
+        var path = "/game";
+        GameData game = new GameData(0, null, null, name, null);
+        GameResponse res = this.makeRequest("POST", path, game, GameResponse.class);
+        System.out.println(res.toString());
+    }
+
+    public GameData joinGame(int gameID, String color) throws Exception {
+        var path = "/game";
+        var req = new JoinGameData(color, gameID);
+        return this.makeRequest("PUT", path, req, GameData.class);
+    }
+
+    public void logout() throws Exception {
+        var path = "/session";
+        this.makeRequest("DELETE", path, null, BaseResponse.class);
+    }
+
 
 
     private <T> T makeRequest(String method, String path, Object request, Class<T> responseClass) throws Exception {
@@ -40,6 +66,9 @@ public class ServerFacade {
             URL url = (new URI(serverUrl + path)).toURL();
             HttpURLConnection http = (HttpURLConnection) url.openConnection();
             http.setRequestMethod(method);
+            if (authToken != null) {
+                http.addRequestProperty("Authorization", authToken);
+            }
             if (request != null){
                 http.setDoOutput(true);
             }

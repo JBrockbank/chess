@@ -34,14 +34,15 @@ public class GameService {
         return gameDAO.createGame(gameName);
     }
 
-    public void joinGame(int gameID, String playerColor, String username) throws DataAccessException{
+    public GameData joinGame(int gameID, String playerColor, String username) throws DataAccessException{
         GameData gameData = gameDAO.getGame(gameID);
+        GameData newGameData = gameData;
         if(playerColor.equals("empty") || playerColor.isEmpty()){
 
         }
         else if (playerColor.equals("WHITE")){
             if (gameData.whiteUsername() == null){
-                GameData newGameData = new GameData(gameID, username, gameData.blackUsername(), gameData.gameName(), gameData.game());
+                newGameData = new GameData(gameID, username, gameData.blackUsername(), gameData.gameName(), gameData.game());
                 gameDAO.updateGame(gameID, newGameData);
             }
             else {
@@ -50,7 +51,7 @@ public class GameService {
         }
         else if (playerColor.equals("BLACK")){
             if (gameData.blackUsername() == null){
-                GameData newGameData = new GameData(gameID, gameData.whiteUsername(), username, gameData.gameName(), gameData.game());
+                newGameData = new GameData(gameID, gameData.whiteUsername(), username, gameData.gameName(), gameData.game());
                 gameDAO.updateGame(gameID, newGameData);
             }
             else {
@@ -60,6 +61,7 @@ public class GameService {
         else {
             throw new DataAccessException("Error: bad request");
         }
+        return newGameData;
     }
 
     public void clear(){

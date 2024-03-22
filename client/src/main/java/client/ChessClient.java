@@ -1,11 +1,13 @@
 package client;
 
+import model.GameData;
+
 import java.util.Arrays;
 
 
 public class ChessClient {
 
-    private String visitorName = null;
+    private String authToken = null;
     private final ServerFacade server;
     private final String serverUrl;
 
@@ -24,9 +26,9 @@ public class ChessClient {
             return switch (cmd) {
                 case "signin" -> signIn(params);
                 case "register" -> register(params);
-//                case "list" -> listPets();
-//                case "signout" -> signOut();
-//                case "adopt" -> adoptPet(params);
+                case "creategame" -> createGame(params);
+                case "logout" -> logout();
+                case "joingame" -> joinGame(params);
 //                case "adoptall" -> adoptAllPets();
 //                case "quit" -> "quit";
                 default -> help();
@@ -48,10 +50,10 @@ public class ChessClient {
         return """
                 - help
                 - logout
-                - create game <game name>
-                - list games
-                - join game <game ID>
-                - join observer <game ID>
+                - createGame <game name>
+                - listGames
+                - joinGame <game ID> <player color>
+                - joinObserver <game ID>
                 """;
     }
 
@@ -66,7 +68,7 @@ public class ChessClient {
             throw new Exception("Error: Expected <username> <password>");
 
         }
-        return "User Logged In.";
+        return "User logged in.";
     }
 
     public String register(String... params) throws Exception {
@@ -81,7 +83,30 @@ public class ChessClient {
             throw new Exception("Error: Expected <username> <password> <email>");
 
         }
-        return "New User Created.";
+        return "New user created. User logged in.";
+    }
+
+
+    public String logout() throws Exception {
+        assertSignedIn();
+        System.out.println("Logging out");
+        server.logout();
+        state = State.SIGNEDOUT;
+        return "Signed out";
+    }
+
+
+    public String createGame(String...params) throws Exception {
+        assertSignedIn();
+        if (params.length >= 1){
+            String name = params[0];
+            System.out.println("Creating Game: " + name);
+            server.createGame(name);
+        }
+        else {
+            throw new Exception("Error: Expected <game name>");
+        }
+        return "New game created";
     }
 
     public void assertSignedIn() throws Exception{
@@ -89,6 +114,31 @@ public class ChessClient {
             throw new Exception("User must be signed in first");
         }
     }
+
+
+    public String joinGame(String...params) throws Exception {
+        assertSignedIn();
+        if (params.length >= 2) {
+            String gameID = params[0];
+            String playerColor = params[1];
+            int ID = 0;
+            ID = Integer.parseInt(gameID);
+            playerColor = playerColor.toUpperCase();
+            GameData gameData = server.joinGame(ID, playerColor);
+            return displayGame(gameData);
+        }
+        else {
+            throw new Exception("Error: Expected <gameID>");
+        }
+    }
+
+
+
+    public String displayGame(GameData gameData){
+        var output = gameData.gameName() + ":\n";
+        return output;
+    }
+
 
 
 }
