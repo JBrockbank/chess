@@ -40,7 +40,6 @@ public class ServerFacade {
         var path = "/user";
         UserData user = new UserData(username, password, email);
         RegisterUserResponse res = this.makeRequest("POST", path, user, RegisterUserResponse.class);
-        System.out.println(res.toString());
         authToken = res.authToken;
         return authToken;
     }
@@ -49,7 +48,6 @@ public class ServerFacade {
         var path = "/game";
         GameData game = new GameData(0, null, null, name, null);
         GameResponse res = this.makeRequest("POST", path, game, GameResponse.class);
-        System.out.println(res.toString());
     }
 
     public GameData joinGame(int gameID, String color) throws Exception {
@@ -61,6 +59,7 @@ public class ServerFacade {
     public void logout() throws Exception {
         var path = "/session";
         this.makeRequest("DELETE", path, null, BaseResponse.class);
+        authToken = null;
     }
 
     public Collection<GameData> listGames() throws Exception {
@@ -99,7 +98,6 @@ public class ServerFacade {
             var res = readBody(http, responseClass);
             return res;
         } catch (Exception ex) {
-            System.out.println("makeRequest Exception Thrown");
 
             throw new Exception(ex.getMessage());
         }
@@ -129,8 +127,6 @@ public class ServerFacade {
             try (InputStream respBody = http.getInputStream()) {
                 InputStreamReader reader = new InputStreamReader(respBody);
                 if (responseClass != null) {
-//                    System.out.println("Here");
-//                    System.out.println("Response Body: " + readerToString(reader));
                     response = new Gson().fromJson(reader, responseClass);
 
                 }
@@ -145,14 +141,6 @@ public class ServerFacade {
     }
 
 
-    private static String readerToString(InputStreamReader reader) throws IOException {
-        StringBuilder sb = new StringBuilder();
-        int c;
-        while ((c = reader.read()) != -1) {
-            sb.append((char) c);
-        }
-        return sb.toString();
-    }
 
 
 }

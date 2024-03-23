@@ -176,7 +176,6 @@ public class ChessClient {
     public String listGames() throws Exception {
         assertSignedIn();
         Collection<GameData> gameList = server.listGames();
-        System.out.print(gameList.size());
         updateGameList(gameList);
         displayGameList();
         return "";
