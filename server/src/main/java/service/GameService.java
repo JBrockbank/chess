@@ -38,7 +38,7 @@ public class GameService {
         GameData gameData = gameDAO.getGame(gameID);
         GameData newGameData = gameData;
         System.out.println("GS");
-        if(playerColor.equals("empty") || playerColor.isEmpty()){
+        if(playerColor == null || playerColor.isEmpty() || playerColor.equals("empty")){
             return newGameData;
         }
         else if (playerColor.equals("WHITE")){
