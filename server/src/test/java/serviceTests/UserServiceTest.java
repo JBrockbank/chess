@@ -55,6 +55,9 @@ public class UserServiceTest {
         var user2 = new UserData("user2", "pass2", "email2");
         assertFalse(userService.verifyUser(user2));
     }
+
+    //HashPassword?
+
     @Test
     void clearTest(){
         assertDoesNotThrow(() -> {
