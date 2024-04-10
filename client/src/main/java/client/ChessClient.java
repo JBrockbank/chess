@@ -4,7 +4,9 @@ import chess.ChessBoard;
 import chess.ChessGame;
 import chess.ChessPiece;
 import chess.ChessPosition;
+import client.WebSocket.WebSocketFacade;
 import model.GameData;
+import webSocketMessages.ResponseException;
 
 import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
@@ -21,6 +23,9 @@ public class ChessClient {
     private final ServerFacade server;
     private final String serverUrl;
     private List<GameData> gameDataList = new ArrayList<>();
+    private WebSocketFacade ws;
+
+    private String username;
 
 
     private State state = State.SIGNEDOUT;
@@ -43,6 +48,11 @@ public class ChessClient {
                 case "joingame" -> joinGame(params);
                 case "listgames" -> listGames();
                 case "observegame" -> observeGame(params);
+                case "redrawChessBoard" -> redrawChessBoard();
+                case "leave" -> leave();
+                case "makeMove" -> makeMove(params);
+                case "resign" -> resign();
+                case "highlight" -> highlightLegalMoves();
                 case "quit" -> "quit";
                 default -> help();
             };
@@ -60,6 +70,15 @@ public class ChessClient {
                     - help
                     """;
         }
+        else if (state == State.Game) {
+            return """
+                    - redrawChessBoard
+                    - leave
+                    - makeMove <move>
+                    - resign
+                    - highlight <piece> (Highlight Legal Moves)
+                    """;
+        }
         return """
                 - help
                 - logout
@@ -73,11 +92,13 @@ public class ChessClient {
 
 
     public String signIn(String... params) throws Exception{
+        assertSignedOut();
         if (params.length >= 2){
             String username = params[0];
             String password = params[1];
             server.signIn(username, password);
             state = State.SIGNEDIN;
+            this.username = username;
         }
         else {
             throw new Exception("Error: Expected <username> <password>");
@@ -87,12 +108,14 @@ public class ChessClient {
     }
 
     public String register(String... params) throws Exception {
+        assertSignedOut();
         if (params.length >= 3) {
             String username = params[0];
             String password = params[1];
             String email = params[2];
             server.register(username, password, email);
             state = State.SIGNEDIN;
+            this.username = username;
         }
         else {
             throw new Exception("Error: Expected <username> <password> <email>");
@@ -107,6 +130,7 @@ public class ChessClient {
         System.out.println("Logging out");
         server.logout();
         state = State.SIGNEDOUT;
+        this.username = null;
         return "Signed out";
     }
 
@@ -124,12 +148,6 @@ public class ChessClient {
         return "New game created";
     }
 
-    public void assertSignedIn() throws Exception{
-        if (state == State.SIGNEDOUT){
-            throw new Exception("User must be signed in first");
-        }
-    }
-
 
     public String joinGame(String...params) throws Exception {
         assertSignedIn();
@@ -144,13 +162,19 @@ public class ChessClient {
             int gameID = gameDataList.get(ID-1).gameID();
             playerColor = playerColor.toUpperCase();
             GameData gameData = server.joinGame(gameID, playerColor);
-            displayGame(gameData);
+//            displayGame(gameData);
+            ChessGame.TeamColor color = convertColor(playerColor);
+            ws = new WebSocketFacade(serverUrl);
+            ws.joinGame(username, ID, color, gameData);
+            state = State.Game;
             return "";
         }
         else {
             throw new Exception("Error: Expected <gameID>");
         }
     }
+
+
 
 
     public String observeGame(String...params) throws Exception {
@@ -181,6 +205,57 @@ public class ChessClient {
         return "";
     }
 
+    public String redrawChessBoard() throws Exception {
+        assertInGame();
+        return "";
+    }
+
+    public String leave() throws Exception {
+        assertInGame();
+        state = State.SIGNEDIN;
+        ws = null;
+        return "";
+    }
+
+    public String makeMove(String...params) throws Exception {
+        assertInGame();
+        return "";
+    }
+
+    public String highlightLegalMoves(String...params) throws Exception {
+        assertInGame();
+        return "";
+    }
+
+    public String resign() throws Exception {
+        assertInGame();
+        return "";
+    }
+
+
+
+    public void assertSignedIn() throws Exception{
+        if (state == State.SIGNEDOUT){
+            throw new Exception("User must be signed in first");
+        }
+        else if (state == State.Game){
+            throw new Exception("User must leave game first");
+        }
+    }
+
+    private void assertSignedOut() throws Exception {
+        if (state != State.SIGNEDOUT){
+            throw new Exception("User must be signed out first");
+        }
+    }
+
+    public void assertInGame() throws Exception{
+        if (state != State.Game){
+            throw new Exception("User must join game first");
+        }
+    }
+
+
 
 
     public void displayGame(GameData gameData){
@@ -205,13 +280,26 @@ public class ChessClient {
         out.print(SET_TEXT_COLOR_MAGENTA);
         out.print(output);
         out.print("\n");
-        drawBoard(out, gameData.game());
+        drawBoardWhite(out, gameData.game());
         drawBoardBlack(out, gameData.game());
-
     }
 
 
-    private static void drawBoard(PrintStream out, ChessGame game) {
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    private static void drawBoardWhite(PrintStream out, ChessGame game) {
         out.print(RESET_BG_COLOR);
         out.print(SET_TEXT_COLOR_WHITE);
         out.print("  A ");
@@ -362,6 +450,22 @@ public class ChessClient {
             System.out.print("      Black Player: " +  bUsername + "\n");
         }
     }
+
+
+    private ChessGame.TeamColor convertColor(String color) throws Exception{
+        if (color == null || color == "" || color == "blank"){
+            throw new ResponseException(500, "HTTP Request needs to be made first");
+        }
+        else if (color == "WHITE"){
+            return ChessGame.TeamColor.WHITE;
+        }
+        else if (color == "BLACK"){
+            return ChessGame.TeamColor.BLACK;
+        }
+        return null;
+    }
+
+
 
 
 }
