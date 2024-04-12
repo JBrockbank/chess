@@ -7,14 +7,12 @@ public class JoinPlayer extends UserGameCommand{
 
     Integer gameID;
     ChessGame.TeamColor playerColor;
-    GameData game;
 
-    public JoinPlayer(String authToken, Integer gameID, ChessGame.TeamColor playerColor, GameData game) {
+    public JoinPlayer(String authToken, Integer gameID, ChessGame.TeamColor playerColor) {
         super(authToken);
         this.gameID = gameID;
         this.playerColor = playerColor;
         this.commandType = CommandType.JOIN_PLAYER;
-        this.game = game;
     }
     public Integer getID(){
         return this.gameID;
@@ -24,8 +22,5 @@ public class JoinPlayer extends UserGameCommand{
         return this.playerColor;
     }
 
-    public GameData getGame() {
-        return this.game;
-    }
 
 }

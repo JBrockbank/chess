@@ -4,10 +4,7 @@ import chess.*;
 import client.WebSocket.WebSocketFacade;
 import model.GameData;
 import ui.DrawBoard;
-import webSocketMessages.ResponseException;
 
-import java.io.PrintStream;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -166,12 +163,10 @@ public class ChessClient {
             }
             this.gameID = gameDataList.get(ID-1).gameID();
             playerColor = playerColor.toUpperCase();
-            GameData gameData = server.joinGame(gameID, playerColor);
-//            displayGame(gameData);
             ChessGame.TeamColor color = convertColor(playerColor);
             this.playerColor = color;
             ws = new WebSocketFacade(serverUrl);
-            ws.joinGame(username, gameID, color, gameData);
+            ws.joinGame(authToken, gameID, color);
             state = State.Game;
             return "";
         }
@@ -195,7 +190,7 @@ public class ChessClient {
             this.gameID = gameDataList.get(ID-1).gameID();
             GameData gameData = server.observeGame(gameID);
             ws = new WebSocketFacade(serverUrl);
-            ws.joinObserver(username, gameID, gameData);
+            ws.joinObserver(authToken, gameID, gameData);
             state = State.Game;
             playerColor = null;
             return "";
@@ -216,7 +211,7 @@ public class ChessClient {
 
     public String redrawChessBoard() throws Exception {
         assertInGame();
-        ws.redrawBoard(username, gameID);
+        ws.redrawBoard(authToken, gameID);
         return "";
     }
 
@@ -224,7 +219,7 @@ public class ChessClient {
         assertInGame();
         state = State.SIGNEDIN;
         ws = new WebSocketFacade(serverUrl);
-        ws.leave(username);
+        ws.leave(authToken, gameID);
         this.playerColor = null;
         this.gameID = 0;
         return "";
@@ -311,6 +306,7 @@ public class ChessClient {
 
     public String resign() throws Exception {
         assertInGame();
+//        ws.resign(gameID);
         return "";
     }
 
@@ -388,7 +384,7 @@ public class ChessClient {
 
     private ChessGame.TeamColor convertColor(String color) throws Exception{
         if (color == null || color == "" || color == "blank"){
-            throw new ResponseException(500, "HTTP Request needs to be made first");
+            throw new Exception("HTTP Request needs to be made first");
         }
         else if (color.equals("WHITE")){
             return ChessGame.TeamColor.WHITE;
@@ -397,7 +393,7 @@ public class ChessClient {
             return ChessGame.TeamColor.BLACK;
         }
         else {
-            throw new ResponseException(500, "Invalid Team Color");
+            throw new Exception("Invalid Team Color");
         }
     }
 

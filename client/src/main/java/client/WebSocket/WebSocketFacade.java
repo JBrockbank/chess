@@ -2,14 +2,14 @@ package client.WebSocket;
 
 import chess.ChessGame;
 
-import chess.ChessPiece;
+import chess.ChessMove;
 import chess.ChessPosition;
-import client.ChessClient;
 import com.google.gson.Gson;
 import model.GameData;
+import org.eclipse.jetty.websocket.api.annotations.OnWebSocketError;
 import ui.DrawBoard;
-import webSocketMessages.ResponseException;
 import webSocketMessages.serverMessages.LoadGame;
+import webSocketMessages.serverMessages.Notification;
 import webSocketMessages.serverMessages.ServerMessage;
 import webSocketMessages.userCommands.*;
 
@@ -38,8 +38,8 @@ public class WebSocketFacade extends Endpoint {
                 @Override
                 public void notify(ServerMessage serverMessage, String message) {
                     switch (serverMessage.getServerMessageType()) {
-                        case NOTIFICATION -> System.out.println("Notification: " + serverMessage.getMessage());
-                        case ERROR -> System.out.println("Error");
+                        case NOTIFICATION -> notification(message);
+                        case ERROR -> error(message);
                         case LOAD_GAME -> loadGame(message);
                     }
                 }
@@ -53,13 +53,19 @@ public class WebSocketFacade extends Endpoint {
                 @Override
                 public void onMessage(String message) {
                     ServerMessage notification = new Gson().fromJson(message, ServerMessage.class);
-                    System.out.print("\nClient.WebSocketFacade.onMessage called. \nMessageType: " + notification.getServerMessageType().toString() + "\nMessage: " + notification.getMessage() + "\n");
                     notificationHandler.notify(notification, message);
                 }
             });
         } catch (DeploymentException | IOException | URISyntaxException ex) {
-            throw new ResponseException(500, ex.getMessage());
+
         }
+    }
+
+    @OnWebSocketError
+    public void onWebSocketError(Throwable cause){
+        System.err.println("WebSocket error occurred:");
+        System.err.println(cause.getMessage());
+        cause.printStackTrace();
     }
 
     //Endpoint requires this method, but you don't have to do anything
@@ -67,43 +73,53 @@ public class WebSocketFacade extends Endpoint {
     public void onOpen(Session session, EndpointConfig endpointConfig) {
     }
 
-    public void joinGame(String username, int gameID, ChessGame.TeamColor color, GameData gameData) throws Exception {
+    public void error(String message) {
+        Error error  = new Gson().fromJson(message, Error.class);
+        System.out.print(error.getMessage());
+    }
+
+    public void notification(String message) {
+        Notification notification  = new Gson().fromJson(message, Notification.class);
+        System.out.print(notification.getMessage());
+    }
+
+
+    public void joinGame(String authToken, int gameID, ChessGame.TeamColor color) throws Exception {
         try {
             System.out.print("\nClient.WebSocketFacade.joinGame called");
             playerColor = color;
-            var action = new JoinPlayer(username, gameID, color, gameData);
+            var action = new JoinPlayer(authToken, gameID, color);
             this.session.getBasicRemote().sendText(new Gson().toJson(action));
         } catch (IOException ex) {
-            throw new ResponseException(500, ex.getMessage());
+//            throw new ResponseException(500, ex.getMessage());
+            System.out.print("Here");
         }
     }
 
-    public void joinObserver(String username, int gameID, GameData game) throws Exception {
+    public void joinObserver(String authToken, int gameID, GameData game) throws Exception {
         try {
-            var action = new JoinObserver(username, gameID, game);
+            var action = new JoinObserver(authToken, gameID, game);
             this.session.getBasicRemote().sendText(new Gson().toJson(action));
         } catch (IOException ex) {
-            throw new ResponseException(500, ex.getMessage());
+//            throw new ResponseException(500, ex.getMessage());
         }
     }
 
 
     public void loadGame(String message) {
         System.out.print("WSF: Load Game Called");
-        LoadGame loadGame = new Gson().fromJson(message, LoadGame.class);
-        GameData game = loadGame.getGameData();
+        LoadGame loadGame  = new Gson().fromJson(message, LoadGame.class);
+        GameData game = loadGame.getGame();
         String bUsername = game.blackUsername();
         String wUsername = game.whiteUsername();
-
-        ChessGame.TeamColor color = loadGame.getTeamColor();
 
         draw.displayGame(game, playerColor, null);
     }
 
 
-    public void leave(String username) throws ResponseException {
+    public void leave(String authToken, int gameID) {
         try {
-            var action = new LeaveGame(username);
+            var action = new LeaveGame(authToken, gameID);
             this.session.getBasicRemote().sendText(new Gson().toJson(action));
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -121,20 +137,11 @@ public class WebSocketFacade extends Endpoint {
     }
 
     public void makeMove(String authToken, ChessPosition startPos, ChessPosition endPos, int gameID, ChessGame.TeamColor color) throws IOException {
-        var action = new MakeMove(authToken, startPos, endPos, gameID, color);
+        ChessMove move = new ChessMove(startPos, endPos, null);
+        var action = new MakeMove(authToken, move, gameID, color);
         this.session.getBasicRemote().sendText(new Gson().toJson(action));
     }
 
-//    public void highlightMoves(String authToken, int gameID) {
-//        try {
-//            var action = new HighlightMoves(authToken, pos);
-//            this.session.getBasicRemote().sendText(new Gson().toJson(action));
-//        }
-//        catch (Exception e) {
-//            System.out.print("Error: " + e.getMessage());
-//        }
-//
-//
-//    }
+
 
 }

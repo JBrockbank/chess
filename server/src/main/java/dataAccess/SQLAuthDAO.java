@@ -7,8 +7,14 @@ import java.util.UUID;
 
 public class SQLAuthDAO implements AuthDAO{
 
-    public SQLAuthDAO() throws Exception{
-        configureDatabase();
+    public SQLAuthDAO() {
+        try {
+            System.out.print("Here SQL");
+            configureDatabase();
+        } catch (DataAccessException e) {
+            System.out.print(e.getMessage());
+            throw new RuntimeException(e);
+        }
     }
 
     private final String[] createStatements = {

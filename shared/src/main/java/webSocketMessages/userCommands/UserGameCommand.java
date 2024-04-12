@@ -10,9 +10,11 @@ import java.util.Objects;
  */
 public class UserGameCommand {
 
+    String authToken;
     public UserGameCommand(String authToken) {
         this.authToken = authToken;
     }
+
 
     public enum CommandType {
         JOIN_PLAYER,
@@ -24,12 +26,6 @@ public class UserGameCommand {
     }
 
     protected CommandType commandType;
-
-    private final String authToken;
-
-    public String getAuthString() {
-        return authToken;
-    }
 
     public CommandType getCommandType() {
         return this.commandType;
@@ -47,11 +43,11 @@ public class UserGameCommand {
         if (!(o instanceof UserGameCommand))
             return false;
         UserGameCommand that = (UserGameCommand) o;
-        return getCommandType() == that.getCommandType() && Objects.equals(getAuthString(), that.getAuthString());
+        return getCommandType() == that.getCommandType() && Objects.equals(getAuthToken(), that.getAuthToken());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getCommandType(), getAuthString());
+        return Objects.hash(getCommandType(), getAuthToken());
     }
 }
