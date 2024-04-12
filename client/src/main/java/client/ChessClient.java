@@ -1,11 +1,9 @@
 package client;
 
-import chess.ChessBoard;
-import chess.ChessGame;
-import chess.ChessPiece;
-import chess.ChessPosition;
+import chess.*;
 import client.WebSocket.WebSocketFacade;
 import model.GameData;
+import ui.DrawBoard;
 import webSocketMessages.ResponseException;
 
 import java.io.PrintStream;
@@ -24,8 +22,13 @@ public class ChessClient {
     private final String serverUrl;
     private List<GameData> gameDataList = new ArrayList<>();
     private WebSocketFacade ws;
-
+    private DrawBoard draw;
     private String username;
+    private int gameID;
+    private String authToken;
+    ChessGame.TeamColor playerColor;
+
+
 
 
     private State state = State.SIGNEDOUT;
@@ -48,11 +51,11 @@ public class ChessClient {
                 case "joingame" -> joinGame(params);
                 case "listgames" -> listGames();
                 case "observegame" -> observeGame(params);
-                case "redrawChessBoard" -> redrawChessBoard();
+                case "redrawboard" -> redrawChessBoard();
                 case "leave" -> leave();
-                case "makeMove" -> makeMove(params);
+                case "makemove" -> makeMove(params);
                 case "resign" -> resign();
-                case "highlight" -> highlightLegalMoves();
+                case "highlight" -> highlightLegalMoves(params);
                 case "quit" -> "quit";
                 default -> help();
             };
@@ -72,11 +75,12 @@ public class ChessClient {
         }
         else if (state == State.Game) {
             return """
-                    - redrawChessBoard
+                    Command not recognized\n
+                    - redrawBoard
                     - leave
-                    - makeMove <move>
+                    - makeMove <piece position> <new piece position>
                     - resign
-                    - highlight <piece> (Highlight Legal Moves)
+                    - highlight <piece position> (Highlight Legal Moves)
                     """;
         }
         return """
@@ -96,7 +100,7 @@ public class ChessClient {
         if (params.length >= 2){
             String username = params[0];
             String password = params[1];
-            server.signIn(username, password);
+            this.authToken = server.signIn(username, password);
             state = State.SIGNEDIN;
             this.username = username;
         }
@@ -113,7 +117,7 @@ public class ChessClient {
             String username = params[0];
             String password = params[1];
             String email = params[2];
-            server.register(username, password, email);
+            this.authToken = server.register(username, password, email);
             state = State.SIGNEDIN;
             this.username = username;
         }
@@ -131,6 +135,7 @@ public class ChessClient {
         server.logout();
         state = State.SIGNEDOUT;
         this.username = null;
+        this.authToken = null;
         return "Signed out";
     }
 
@@ -159,13 +164,14 @@ public class ChessClient {
             if (ID > gameDataList.size()){
                 throw new Exception("Game doesn't exist");
             }
-            int gameID = gameDataList.get(ID-1).gameID();
+            this.gameID = gameDataList.get(ID-1).gameID();
             playerColor = playerColor.toUpperCase();
             GameData gameData = server.joinGame(gameID, playerColor);
 //            displayGame(gameData);
             ChessGame.TeamColor color = convertColor(playerColor);
+            this.playerColor = color;
             ws = new WebSocketFacade(serverUrl);
-            ws.joinGame(username, ID, color, gameData);
+            ws.joinGame(username, gameID, color, gameData);
             state = State.Game;
             return "";
         }
@@ -186,9 +192,12 @@ public class ChessClient {
             if (ID > gameDataList.size()){
                 throw new Exception("Game doesn't exist");
             }
-            int gameID = gameDataList.get(ID-1).gameID();
+            this.gameID = gameDataList.get(ID-1).gameID();
             GameData gameData = server.observeGame(gameID);
-            displayGame(gameData);
+            ws = new WebSocketFacade(serverUrl);
+            ws.joinObserver(username, gameID, gameData);
+            state = State.Game;
+            playerColor = null;
             return "";
         }
         else {
@@ -207,23 +216,93 @@ public class ChessClient {
 
     public String redrawChessBoard() throws Exception {
         assertInGame();
+        ws.redrawBoard(username, gameID);
         return "";
     }
 
     public String leave() throws Exception {
         assertInGame();
         state = State.SIGNEDIN;
-        ws = null;
+        ws = new WebSocketFacade(serverUrl);
+        ws.leave(username);
+        this.playerColor = null;
+        this.gameID = 0;
         return "";
     }
 
     public String makeMove(String...params) throws Exception {
         assertInGame();
+        System.out.print("Making Move");
+        if (params.length >= 2) {
+            String startPosString = params[0];
+            char columnChar = startPosString.charAt(0);
+            String rowChar = String.valueOf(startPosString.charAt(1));
+            int startRow = Integer.parseInt(rowChar);
+            int startCol = letterToNumber(columnChar);
+            ChessPosition startPos = new ChessPosition(startRow, startCol);
+
+            String endPosString = params[1];
+            columnChar = endPosString.charAt(0);
+            rowChar = String.valueOf(endPosString.charAt(1));
+            int endRow = Integer.parseInt(rowChar);
+            int endCol = letterToNumber(columnChar);
+            ChessPosition endPos = new ChessPosition(endRow, endCol);
+            ws.makeMove(username, startPos, endPos, gameID, playerColor);
+        }
+        else {
+            throw new Exception("Error: Expected makemove <piece position> <new piece position");
+        }
         return "";
+    }
+
+    public int letterToNumber(char letter) throws Exception {
+        if (letter == 'A' || letter == 'a'){
+            return 1;
+        }
+        else if (letter == 'B' || letter == 'b'){
+            return 2;
+        }
+        else if (letter == 'C' || letter == 'c'){
+            return 3;
+        }
+        else if (letter == 'D' || letter == 'd'){
+            return 4;
+        }
+        else if (letter == 'E' || letter == 'e'){
+            return 5;
+        }
+        else if (letter == 'F' || letter == 'f'){
+            return 6;
+        }
+        else if (letter == 'G' || letter == 'g'){
+            return 7;
+        }
+        else if (letter == 'H' || letter == 'h'){
+            return 8;
+        }
+        else {
+            throw new Exception("Error: expected makemove <(A-H)(1-8)> <(A-H)(1-8)>");
+        }
     }
 
     public String highlightLegalMoves(String...params) throws Exception {
         assertInGame();
+        System.out.print("\nHighlighting legal moves");
+        if (params.length >=1) {
+            String posString = params[0];
+            char columnChar = posString.charAt(0);
+            String rowChar = String.valueOf(posString.charAt(1));
+            int row = Integer.parseInt(rowChar);
+            int col = letterToNumber(columnChar);
+            ChessPosition pos = new ChessPosition(row,col);
+
+            ws.highlightMoves(authToken, pos);
+
+            //Find a way to get the updated Game Data
+
+        }
+
+
         return "";
     }
 
@@ -258,166 +337,7 @@ public class ChessClient {
 
 
 
-    public void displayGame(GameData gameData){
-        var out = new PrintStream(System.out, true, StandardCharsets.UTF_8);
-        var output = gameData.gameName() + ":\n";
-        String wUsername = gameData.whiteUsername();
-        String bUsername = gameData.blackUsername();
-        if (wUsername == null){
-            wUsername = "No player added";
-        }
-        if (bUsername == null){
-            bUsername = "No player added";
-        }
-        output += "White Player: " + wUsername + "\n";
-        output += "Black Player: " + bUsername + "\n";
-        if (gameData.game().getTeamTurn() == ChessGame.TeamColor.WHITE){
-            output += wUsername + "'s turn to move";
-        }
-        else {
-            output += bUsername + "'s turn to move\n\n";
-        }
-        out.print(SET_TEXT_COLOR_MAGENTA);
-        out.print(output);
-        out.print("\n");
-        drawBoardWhite(out, gameData.game());
-        drawBoardBlack(out, gameData.game());
-    }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    private static void drawBoardWhite(PrintStream out, ChessGame game) {
-        out.print(RESET_BG_COLOR);
-        out.print(SET_TEXT_COLOR_WHITE);
-        out.print("  A ");
-        out.print(" B ");
-        out.print(" C ");
-        out.print(" D ");
-        out.print(" E ");
-        out.print(" F ");
-        out.print(" G ");
-        out.print(" H \n");
-        for (int j = 1; j < 9; j++){
-            out.print(SET_TEXT_COLOR_WHITE);
-            out.print(j);
-            for (int i = 1; i < 9; i++) {
-                if ((j % 2) != 0){
-                    if ((i % 2) == 0){
-                        setYellow(out);
-                    }
-                    else {
-                        setBrown(out);
-                    }
-                    evalBoard(out, game, j, i);
-                }
-                else {
-                    if ((i % 2) == 0){
-                        setBrown(out);
-                    }
-                    else {
-                        setYellow(out);
-                    }
-                    evalBoard(out, game, j, i);
-                }
-            }
-            out.print(RESET_BG_COLOR);
-            out.print("\n");
-        }
-    }
-
-    private static void drawBoardBlack(PrintStream out, ChessGame game) {
-        out.print(RESET_BG_COLOR);
-        for (int j = 1; j < 9; j++){
-            out.print("\n");
-            out.print(SET_TEXT_COLOR_WHITE);
-            out.print(9-j);
-            for (int i = 1; i < 9; i++) {
-                if ((j % 2) != 0){
-                    if ((i % 2) == 0){
-                        setYellow(out);
-                    }
-                    else {
-                        setBrown(out);
-                    }
-                    evalBoard(out, game, 9-j, 9-i);
-                }
-                else {
-                    if ((i % 2) == 0){
-                        setBrown(out);
-                    }
-                    else {
-                        setYellow(out);
-                    }
-                    evalBoard(out, game, 9-j, 9-i);
-                }
-            }
-            out.print(RESET_BG_COLOR);
-        }
-        out.print(SET_TEXT_COLOR_WHITE);
-        out.print("\n  H ");
-        out.print(" G ");
-        out.print(" F ");
-        out.print(" E ");
-        out.print(" D ");
-        out.print(" C ");
-        out.print(" B ");
-        out.print(" A ");
-        out.print("\n");
-    }
-
-
-
-    public static void evalBoard(PrintStream out, ChessGame game, int row, int col){
-        ChessBoard board = game.getBoard();
-        ChessPosition pos = new ChessPosition(row, col);
-        if (board.getPiece(pos) != null){
-            ChessPiece piece = board.getPiece(pos);
-            if (piece.getTeamColor() == ChessGame.TeamColor.WHITE){
-                out.print(SET_TEXT_COLOR_WHITE);
-            }
-            else {
-                out.print(SET_TEXT_COLOR_BLACK);
-            }
-            out.print(" " + getPieceType(piece) + " ");
-        }
-        else {
-            out.print("   ");
-        }
-    }
-
-    public static String getPieceType(ChessPiece piece){
-        return switch (piece.getPieceType()) {
-            case QUEEN -> "Q";
-            case KING -> "K";
-            case BISHOP -> "B";
-            case KNIGHT -> "N";
-            case ROOK -> "R";
-            case PAWN -> "P";
-        };
-    }
-
-    private static void setBrown(PrintStream out) {
-        out.print(SET_BG_COLOR_CREME_BROWN);
-        out.print(SET_TEXT_COLOR_WHITE);
-    }
-
-    private static void setYellow(PrintStream out) {
-        out.print(SET_BG_COLOR_CREME_YELLOW);
-        out.print(SET_TEXT_COLOR_WHITE);
-    }
 
 
     private void updateGameList(Collection<GameData> gameList){
@@ -456,13 +376,15 @@ public class ChessClient {
         if (color == null || color == "" || color == "blank"){
             throw new ResponseException(500, "HTTP Request needs to be made first");
         }
-        else if (color == "WHITE"){
+        else if (color.equals("WHITE")){
             return ChessGame.TeamColor.WHITE;
         }
-        else if (color == "BLACK"){
+        else if (color.equals("BLACK")) {
             return ChessGame.TeamColor.BLACK;
         }
-        return null;
+        else {
+            throw new ResponseException(500, "Invalid Team Color");
+        }
     }
 
 

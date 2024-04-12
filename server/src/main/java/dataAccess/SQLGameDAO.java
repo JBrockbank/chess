@@ -71,19 +71,27 @@ public class SQLGameDAO implements GameDAO{
     @Override
     public void updateGame(int gameID, GameData gameData) throws DataAccessException {
         try (var conn = DatabaseManager.getConnection()) {
+            if (gameData.game() != null){
+                String update = "UPDATE gameData SET whiteUsername = ?, blackUsername = ?, game = ? WHERE gameID = ?";
+                PreparedStatement stmt = conn.prepareStatement(update);
+                stmt.setString(1, gameData.whiteUsername());
+                stmt.setString(2, gameData.blackUsername());
+                ChessGame game = gameData.game();
+                Gson gson = new Gson();
+                String gameJson = gson.toJson(game);
+                stmt.setString(3, gameJson);
+                stmt.setInt(4, gameID);
+                stmt.executeUpdate();
+            }
+            else {
+                String update = "UPDATE gameData SET whiteUsername = ?, blackUsername = ? WHERE gameID = ?";
+                PreparedStatement stmt = conn.prepareStatement(update);
+                stmt.setString(1, gameData.whiteUsername());
+                stmt.setString(2, gameData.blackUsername());
+                stmt.setInt(3, gameID);
+                stmt.executeUpdate();
+            }
 
-            String update = "UPDATE gameData SET whiteUsername = ?, blackUsername = ? WHERE gameID = ?";
-            PreparedStatement stmt = conn.prepareStatement(update);
-            stmt.setString(1, gameData.whiteUsername());
-            stmt.setString(2, gameData.blackUsername());
-//            if (gameData.game() != null){
-//                ChessGame game = gameData.game();
-//                Gson gson = new Gson();
-//                String gameJson = gson.toJson(game);
-//                stmt.setString(3, gameJson);
-//            }
-            stmt.setInt(3, gameID);
-            stmt.executeUpdate();
         }
         catch (Exception e) {
             throw new DataAccessException("Error: bad request");

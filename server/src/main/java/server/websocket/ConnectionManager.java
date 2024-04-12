@@ -31,20 +31,37 @@ public class ConnectionManager {
         }
     }
     public void broadcast(String excludeVisitorName, ServerMessage message) throws IOException {
+
+
+
         var removeList = new ArrayList<Connection>();
-        for (var c : connections.values()) {
-            if (c.session.isOpen()) {
-                if (!c.visitorName.equals(excludeVisitorName)) {
-                    c.send(new Gson().toJson(message));
+        if (message.getServerMessageType() == ServerMessage.ServerMessageType.LOAD_GAME){
+            for (var c : connections.values()) {
+                if (c.session.isOpen()) {
+                    if (!c.visitorName.equals(excludeVisitorName)) {
+
+                        c.send(new Gson().toJson(message));
+                    }
+                } else {
+                    removeList.add(c);
                 }
-            } else {
-                removeList.add(c);
             }
         }
+        else {
 
-        // Clean up any connections that were left open.
-        for (var c : removeList) {
-            connections.remove(c.visitorName);
+            for (var c : connections.values()) {
+                if (c.session.isOpen()) {
+                    if (!c.visitorName.equals(excludeVisitorName)) {
+                        c.send(new Gson().toJson(message));
+                    }
+                } else {
+                    removeList.add(c);
+                }
+            }
+            // Clean up any connections that were left open.
+            for (var c : removeList) {
+                connections.remove(c.visitorName);
+            }
         }
 
 

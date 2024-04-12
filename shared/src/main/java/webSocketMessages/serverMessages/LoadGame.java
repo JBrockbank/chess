@@ -1,10 +1,12 @@
 package webSocketMessages.serverMessages;
 
+import chess.ChessGame;
 import model.GameData;
 
 public class LoadGame extends ServerMessage{
 
     public GameData game;
+    public ChessGame.TeamColor teamColor;
     public LoadGame(ServerMessageType type) {
         super(type);
     }
@@ -17,6 +19,9 @@ public class LoadGame extends ServerMessage{
 
     public GameData getGameData() {
         return game;
+    }
+    public ChessGame.TeamColor getTeamColor() {
+        return teamColor;
     }
 
 
