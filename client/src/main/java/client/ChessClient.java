@@ -295,14 +295,17 @@ public class ChessClient {
             int row = Integer.parseInt(rowChar);
             int col = letterToNumber(columnChar);
             ChessPosition pos = new ChessPosition(row,col);
-
-            ws.highlightMoves(authToken, pos);
-
+            updateGame();
+            GameData gameData = null;
+            for (int i = 0; i < gameDataList.size(); i++){
+                 if(gameDataList.get(i).gameID() == gameID) {
+                     gameData = gameDataList.get(i);
+                 }
+            }
+            draw = new DrawBoard();
+            draw.displayGame(gameData, playerColor, pos);
             //Find a way to get the updated Game Data
-
         }
-
-
         return "";
     }
 
@@ -337,14 +340,25 @@ public class ChessClient {
 
 
 
-
-
-
-    private void updateGameList(Collection<GameData> gameList){
-        this.gameDataList.clear();
+    private void updateGameList(Collection<GameData> gameList) throws Exception {
+        gameDataList.clear();
         for (GameData gameData : gameList) {
             this.gameDataList.add(gameData);
         }
+    }
+
+
+    private void updateGame() throws Exception {
+        this.gameDataList.clear();
+        Collection<GameData> newGameList = server.listGames();
+        for (GameData game: newGameList) {
+            gameDataList.add(game);
+        }
+//        for (int i = 0; i < gameDataList.size(); i++){
+//            if (gameDataList.get(i).gameID() == gameID){
+//                this.gameID = i+1;
+//            }
+//        }
     }
 
     private void displayGameList(){

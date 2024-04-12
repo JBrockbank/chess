@@ -17,6 +17,8 @@ import javax.websocket.*;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.List;
 
 //need to extend Endpoint for websocket to work properly
 public class WebSocketFacade extends Endpoint {
@@ -25,6 +27,7 @@ public class WebSocketFacade extends Endpoint {
     NotificationHandler notificationHandler;
     private ChessGame.TeamColor playerColor;
     private DrawBoard draw = new DrawBoard();
+    private List<GameData> gameDataList = new ArrayList<>();
 
 
     public WebSocketFacade(String url) throws Exception {
@@ -122,16 +125,16 @@ public class WebSocketFacade extends Endpoint {
         this.session.getBasicRemote().sendText(new Gson().toJson(action));
     }
 
-    public void highlightMoves(String authToken, int gameIDf) {
-        try {
-            var action = new HighlightMoves(authToken, pos);
-            this.session.getBasicRemote().sendText(new Gson().toJson(action));
-        }
-        catch (Exception e) {
-            System.out.print("Error: " + e.getMessage());
-        }
-
-
-    }
+//    public void highlightMoves(String authToken, int gameID) {
+//        try {
+//            var action = new HighlightMoves(authToken, pos);
+//            this.session.getBasicRemote().sendText(new Gson().toJson(action));
+//        }
+//        catch (Exception e) {
+//            System.out.print("Error: " + e.getMessage());
+//        }
+//
+//
+//    }
 
 }

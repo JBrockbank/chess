@@ -14,13 +14,17 @@ public class DrawBoard {
 
     private Collection<ChessMove> validMoves = null;
     HashSet<ChessPosition> highlightSquares = null;
+    ChessPosition pos;
     public DrawBoard(){
 
     }
 
-    public void displayGame(GameData gameData, ChessGame.TeamColor playerColor, Collection<ChessMove> moves){
-        validMoves = moves;
-        if (validMoves != null) {
+    public void displayGame(GameData gameData, ChessGame.TeamColor playerColor, ChessPosition pos){
+
+
+        if (pos != null) {
+            this.pos = pos;
+            validMoves = gameData.game().validMoves(pos);
             highlightSquares = getValidPositions();
         }
         var out = new PrintStream(System.out, true, StandardCharsets.UTF_8);
@@ -61,7 +65,11 @@ public class DrawBoard {
             out.print(SET_TEXT_COLOR_WHITE);
             out.print(j);
             for (int i = 1; i < 9; i++) {
-                if (highlightSquares != null && highlightSquares.contains(new ChessPosition(j, i))){
+                ChessPosition current = new ChessPosition(j, i);
+                if (current.equals(pos)){
+                    doMainPieceWhite(out, game, j, i);
+                }
+                else if (highlightSquares != null && highlightSquares.contains(new ChessPosition(j, i))){
                     doHighlightWhite(out, game, j, i);
                 }
                 else {
@@ -105,6 +113,16 @@ public class DrawBoard {
         out.print(" H \n");
     }
 
+
+    private void doMainPieceBlack(PrintStream out, ChessGame game, int j, int i) {
+        setNeonYellow(out);
+        evalBoard(out, game, j, i);
+    }
+
+    private void doMainPieceWhite(PrintStream out, ChessGame game, int j, int i) {
+        setBlue(out);
+        evalBoard(out, game, j, i);
+    }
 
     private void doHighlightWhite(PrintStream out, ChessGame game, int j, int i) {
         if ((j % 2) != 0){
@@ -165,8 +183,12 @@ public class DrawBoard {
             out.print(SET_TEXT_COLOR_WHITE);
             out.print(9-j);
             for (int i = 1; i < 9; i++) {
-                if (highlightSquares != null && highlightSquares.contains(new ChessPosition(j, i))){
-                    doHighlightBlack(out, game, j, i);
+                ChessPosition current = new ChessPosition(9-j, 9-i);
+                if (current.equals(pos)){
+                    doMainPieceBlack(out, game, 9-j, 9-i);
+                }
+                else if (highlightSquares != null && highlightSquares.contains(new ChessPosition(9-j, 9-i))){
+                    doHighlightBlack(out, game, 9-j, 9-i);
                 }
                 else {
                     if ((j % 2) != 0){
@@ -269,6 +291,15 @@ public class DrawBoard {
         out.print(SET_TEXT_COLOR_WHITE);
     }
 
+    private static void setNeonYellow(PrintStream out) {
+        out.print(SET_BG_COLOR_YELLOW);
+        out.print(SET_TEXT_COLOR_WHITE);
+    }
+
+    private static void setBlue(PrintStream out) {
+        out.print(SET_BG_COLOR_BLUE);
+        out.print(SET_TEXT_COLOR_WHITE);
+    }
 
 
 
