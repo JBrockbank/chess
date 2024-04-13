@@ -6,7 +6,6 @@ import chess.ChessMove;
 import chess.ChessPosition;
 import com.google.gson.Gson;
 import model.GameData;
-import org.eclipse.jetty.websocket.api.annotations.OnWebSocketError;
 import ui.DrawBoard;
 import webSocketMessages.serverMessages.LoadGame;
 import webSocketMessages.serverMessages.Notification;
