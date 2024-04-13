@@ -6,7 +6,6 @@ import chess.ChessMove;
 import chess.ChessPosition;
 
 import java.util.Collection;
-import java.util.HashSet;
 
 public class RookMovesCalculator extends PieceMovesCalculator {
 
@@ -22,29 +21,29 @@ public class RookMovesCalculator extends PieceMovesCalculator {
         int col = position.getColumn();
 
         for (int i = 1; i < 8; i++) {
-            if (CanMoveHere(row + i, col) && (i + row < 9)){
-                AddMove(row + i, col);
+            if (canMoveHere(row + i, col) && (i + row < 9)){
+                addMove(row + i, col);
             } else{
                 break;
             }
         }
         for (int i = 1; i < 8; i++) {
-            if (CanMoveHere(row, col + i) && (i + col < 9)){
-                AddMove(row, col + i);
+            if (canMoveHere(row, col + i) && (i + col < 9)){
+                addMove(row, col + i);
             } else{
                 break;
             }
         }
         for (int i = 1; i < 8; i++) {
-            if (CanMoveHere(row - i, col) && (row - i > 0)){
-                AddMove(row - i, col);
+            if (canMoveHere(row - i, col) && (row - i > 0)){
+                addMove(row - i, col);
             } else{
                 break;
             }
         }
         for (int i = 1; i < 8; i++) {
-            if (CanMoveHere(row, col - i) && (col - i > 0)){
-                AddMove(row, col - i);
+            if (canMoveHere(row, col - i) && (col - i > 0)){
+                addMove(row, col - i);
             } else{
                 break;
             }

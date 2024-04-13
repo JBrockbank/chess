@@ -8,10 +8,10 @@ import static ui.EscapeSequences.*;
 
 
 
-public class repl{
+public class Repl {
     private final ChessClient client;
 
-    public repl(String serverUrl) {
+    public Repl(String serverUrl) {
         client = new ChessClient(serverUrl);
     }
 
@@ -38,10 +38,7 @@ public class repl{
         System.out.println();
     }
 
-//    public void notify(Notification notification) {
-//        System.out.println(SET_TEXT_COLOR_RED + notification.message());
-//        printPrompt();
-//    }
+
 
     private void printPrompt() {
         System.out.print("\n" + SET_TEXT_COLOR_WHITE + ">>> " + SET_TEXT_COLOR_GREEN);

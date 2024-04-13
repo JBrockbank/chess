@@ -47,7 +47,7 @@ public class WebSocketFacade extends Endpoint {
             WebSocketContainer container = ContainerProvider.getWebSocketContainer();
             this.session = container.connectToServer(this, socketURI);
 
-            //set message handler
+
             this.session.addMessageHandler(new MessageHandler.Whole<String>() {
                 @Override
                 public void onMessage(String message) {
@@ -60,12 +60,7 @@ public class WebSocketFacade extends Endpoint {
         }
     }
 
-//    @OnWebSocketError
-//    public void onWebSocketError(Throwable cause){
-//        System.err.println("WebSocket error occurred:");
-//        System.err.println(cause.getMessage());
-//        cause.printStackTrace();
-//    }
+
 
     //Endpoint requires this method, but you don't have to do anything
     @Override
@@ -90,7 +85,6 @@ public class WebSocketFacade extends Endpoint {
             var action = new JoinPlayer(authToken, gameID, color);
             this.session.getBasicRemote().sendText(new Gson().toJson(action));
         } catch (IOException ex) {
-//            throw new ResponseException(500, ex.getMessage());
             System.out.print("Here");
         }
     }
@@ -100,7 +94,6 @@ public class WebSocketFacade extends Endpoint {
             var action = new JoinObserver(authToken, gameID);
             this.session.getBasicRemote().sendText(new Gson().toJson(action));
         } catch (IOException ex) {
-//            throw new ResponseException(500, ex.getMessage());
         }
     }
 

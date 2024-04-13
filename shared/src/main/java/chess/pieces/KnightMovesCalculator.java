@@ -24,8 +24,8 @@ public class KnightMovesCalculator extends PieceMovesCalculator{
         int[] colMoves = {2, -2, 1, -1, 2, -2, 1, -1};
 
         for (int i = 0; i < 8; i++) {
-            if (CanMoveHere(row + rowMoves[i], col + colMoves[i])) {
-                AddMove(row + rowMoves[i], col + colMoves[i]);
+            if (canMoveHere(row + rowMoves[i], col + colMoves[i])) {
+                addMove(row + rowMoves[i], col + colMoves[i]);
             }
         }
         return validMoves;

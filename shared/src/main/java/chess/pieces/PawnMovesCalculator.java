@@ -19,42 +19,42 @@ public class PawnMovesCalculator extends PieceMovesCalculator{
 
         //Adding Moves for White Pawns
         if(this.teamColor == ChessGame.TeamColor.WHITE){
-            if (CanMoveHere(row + 1, col)){
-                AddMove(row + 1, col);
+            if (canMoveHere(row + 1, col)){
+                addMove(row + 1, col);
                 if(row == 2) {
-                    if (CanMoveHere(row + 2, col)) {
-                        AddMove(row + 2, col);
+                    if (canMoveHere(row + 2, col)) {
+                        addMove(row + 2, col);
                     }
                 }
             }
-            if (IsEnemyThere(row + 1, col - 1)) {
-                AddMove(row+1, col-1);
+            if (isEnemyThere(row + 1, col - 1)) {
+                addMove(row+1, col-1);
             }
-            if (IsEnemyThere(row + 1, col + 1)) {
-                AddMove(row + 1, col + 1);
+            if (isEnemyThere(row + 1, col + 1)) {
+                addMove(row + 1, col + 1);
             }
         }
         //Adding Moves for Black Pawns
         else {
-            if (CanMoveHere(row - 1, col)){
-                AddMove(row - 1, col);
+            if (canMoveHere(row - 1, col)){
+                addMove(row - 1, col);
                 if(row == 7) {
-                    if (CanMoveHere(row - 2, col)) {
-                        AddMove(row - 2, col);
+                    if (canMoveHere(row - 2, col)) {
+                        addMove(row - 2, col);
                     }
                 }
             }
-            if (IsEnemyThere(row - 1, col - 1)) {
-                AddMove(row - 1, col - 1);
+            if (isEnemyThere(row - 1, col - 1)) {
+                addMove(row - 1, col - 1);
             }
-            if (IsEnemyThere(row - 1, col + 1)) {
-                AddMove(row - 1, col + 1);
+            if (isEnemyThere(row - 1, col + 1)) {
+                addMove(row - 1, col + 1);
             }
         }
         return validMoves;
     }
 
-    public boolean CanMoveHere(int row, int col) {
+    public boolean canMoveHere(int row, int col) {
         if (row >= 1 && row < 9 && col >= 1 && col < 9){
             ChessPosition pos = new ChessPosition(row, col);
             if(chessBoard.getPiece(pos) == null) {
@@ -69,9 +69,9 @@ public class PawnMovesCalculator extends PieceMovesCalculator{
         }
     }
 
-    public void AddMove(int row, int col){
+    public void addMove(int row, int col){
         if(row == 1 || row == 8){
-            PromotionAddMove(row, col);
+            promotionAddMove(row, col);
         }
         else {
             ChessPosition endPosition = new ChessPosition(row, col);
@@ -80,19 +80,19 @@ public class PawnMovesCalculator extends PieceMovesCalculator{
         }
     }
 
-    public void PromotionAddMove(int row, int col){
+    public void promotionAddMove(int row, int col){
         ChessPosition endPosition = new ChessPosition(row, col);
-        ChessMove Queen = new ChessMove(position, endPosition, ChessPiece.PieceType.QUEEN);
-        ChessMove Rook = new ChessMove(position, endPosition, ChessPiece.PieceType.ROOK);
-        ChessMove Bishop = new ChessMove(position, endPosition, ChessPiece.PieceType.BISHOP);
-        ChessMove Knight = new ChessMove(position, endPosition, ChessPiece.PieceType.KNIGHT);
-        validMoves.add(Queen);
-        validMoves.add(Rook);
-        validMoves.add(Bishop);
-        validMoves.add(Knight);
+        ChessMove queen = new ChessMove(position, endPosition, ChessPiece.PieceType.QUEEN);
+        ChessMove rook = new ChessMove(position, endPosition, ChessPiece.PieceType.ROOK);
+        ChessMove bishop = new ChessMove(position, endPosition, ChessPiece.PieceType.BISHOP);
+        ChessMove knight = new ChessMove(position, endPosition, ChessPiece.PieceType.KNIGHT);
+        validMoves.add(queen);
+        validMoves.add(rook);
+        validMoves.add(bishop);
+        validMoves.add(knight);
     }
 
-    public boolean IsEnemyThere(int row, int col) {
+    public boolean isEnemyThere(int row, int col) {
         ChessPosition pos = new ChessPosition(row, col);
         ChessPiece piece = chessBoard.getPiece(pos);
         if(piece == null) {

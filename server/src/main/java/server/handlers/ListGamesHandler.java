@@ -16,7 +16,7 @@ public class ListGamesHandler extends Handler{
         try {
             String authToken = req.headers("Authorization");
             authenticate(authToken);
-            Collection<GameData> games = gameService.ListGames();
+            Collection<GameData> games = gameService.listGames();
             res.status(200);
             GameListResponse response = new GameListResponse(games);
             String output = response.toJSon();

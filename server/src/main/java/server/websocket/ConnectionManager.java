@@ -13,7 +13,6 @@ import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class ConnectionManager {
-//    public final ConcurrentHashMap<String, Connection> connections = new ConcurrentHashMap<>();
 public final HashMap<Integer, HashMap<String, Session>> connections = new HashMap<>();
 
 
@@ -26,20 +25,14 @@ public final HashMap<Integer, HashMap<String, Session>> connections = new HashMa
         connections.put(gameID, sessionHashMap);
     }
 
-    public void remove(int ID, String authToken, Session session) {
-        Integer gameID = Integer.valueOf(ID);
+    public void remove(int id, String authToken, Session session) {
+        Integer gameID = Integer.valueOf(id);
         HashMap<String, Session> sessionHashMap = connections.get(gameID);
         sessionHashMap.remove(authToken);
 
     }
 
-//    public void sendErrorMessage(int gameID, String authToken, Error message) throws IOException {
-//        System.out.print("Sending Error Message");
-//        HashMap<String, Session> sessionHashMap = connections.get(gameID);
-//        Session session = sessionHashMap.get(authToken);
-//        System.out.print("\nMessage: " + message.getMessage());
-//        session.getRemote().sendString(new Gson().toJson(message));
-//    }
+
 
     public void sendMessage(int gameID, String authToken, String message) {
         try {

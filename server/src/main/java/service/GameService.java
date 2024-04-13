@@ -1,9 +1,7 @@
 package service;
 
-import chess.ChessGame;
 import dataAccess.DataAccessException;
 import dataAccess.GameDAO;
-import dataAccess.MemoryGameDAO;
 import dataAccess.SQLGameDAO;
 import model.GameData;
 
@@ -22,7 +20,7 @@ public class GameService {
         }
     }
 
-    public Collection<GameData> ListGames() throws DataAccessException{
+    public Collection<GameData> listGames() throws DataAccessException{
         return gameDAO.getAllGames();
     }
 

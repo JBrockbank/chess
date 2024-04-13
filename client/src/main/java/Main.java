@@ -1,5 +1,4 @@
-import chess.*;
-import client.repl;
+import client.Repl;
 
 
 
@@ -7,7 +6,7 @@ public class Main {
 
     public static void main(String[] args) {
         var serverUrl = "http://localhost:8080";
-        new repl(serverUrl).run();
+        new Repl(serverUrl).run();
     }
 
 }

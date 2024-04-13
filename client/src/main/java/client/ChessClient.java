@@ -156,12 +156,12 @@ public class ChessClient {
         if (params.length >= 2) {
             String gameIndex = params[0];
             String playerColor = params[1];
-            int ID = 0;
-            ID = Integer.parseInt(gameIndex);
-            if (ID > gameDataList.size()){
+            int id = 0;
+            id = Integer.parseInt(gameIndex);
+            if (id > gameDataList.size()){
                 throw new Exception("Game doesn't exist");
             }
-            this.gameID = gameDataList.get(ID-1).gameID();
+            this.gameID = gameDataList.get(id-1).gameID();
             playerColor = playerColor.toUpperCase();
             ChessGame.TeamColor color = convertColor(playerColor);
             this.playerColor = color;
@@ -184,12 +184,12 @@ public class ChessClient {
         assertSignedIn();
         if (params.length >= 1) {
             String gameIndex = params[0];
-            int ID = 0;
-            ID = Integer.parseInt(gameIndex);
-            if (ID > gameDataList.size()){
+            int id = 0;
+            id = Integer.parseInt(gameIndex);
+            if (id > gameDataList.size()){
                 throw new Exception("Game doesn't exist");
             }
-            this.gameID = gameDataList.get(ID-1).gameID();
+            this.gameID = gameDataList.get(id-1).gameID();
 
             ws = new WebSocketFacade(serverUrl);
             ws.joinObserver(authToken, gameID);
@@ -303,7 +303,6 @@ public class ChessClient {
             }
             draw = new DrawBoard();
             draw.displayGame(gameData, playerColor, pos);
-            //Find a way to get the updated Game Data
         }
         return "";
     }
@@ -354,11 +353,7 @@ public class ChessClient {
         for (GameData game: newGameList) {
             gameDataList.add(game);
         }
-//        for (int i = 0; i < gameDataList.size(); i++){
-//            if (gameDataList.get(i).gameID() == gameID){
-//                this.gameID = i+1;
-//            }
-//        }
+
     }
 
     private void displayGameList(){

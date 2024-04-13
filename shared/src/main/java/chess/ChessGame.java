@@ -55,9 +55,7 @@ public class ChessGame {
         if (board.getPiece(startPosition) == null) {
             return null;
         }
-//        else if (board.getPiece(startPosition).getTeamColor() != getTeamTurn()){
-//            return null;
-//        }
+
         else {
             ChessPiece piece = board.getPiece(startPosition);
             Collection<ChessMove> validMoves = piece.pieceMoves(board, startPosition);
@@ -112,8 +110,8 @@ public class ChessGame {
             ChessPosition endPos = move.getEndPosition();
             ChessPiece newPiece = board.getPiece(startPos);
             if (promotionPiece != null){
-                ChessPiece PromoPiece = new ChessPiece(newPiece.getTeamColor(), promotionPiece);
-                newPiece = PromoPiece;
+                ChessPiece promoPiece = new ChessPiece(newPiece.getTeamColor(), promotionPiece);
+                newPiece = promoPiece;
             }
 
             board.addPiece(endPos, newPiece);

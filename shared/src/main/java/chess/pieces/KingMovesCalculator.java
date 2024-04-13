@@ -22,8 +22,8 @@ public class KingMovesCalculator extends PieceMovesCalculator{
 
         for(int i = -1; i < 2; i++){
             for(int j = -1; j < 2; j++){
-                if (CanMoveHere(row + j, col + i)){
-                    AddMove(row+j,col+i);
+                if (canMoveHere(row + j, col + i)){
+                    addMove(row+j,col+i);
                 }
             }
         }

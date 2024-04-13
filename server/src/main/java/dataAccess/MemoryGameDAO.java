@@ -43,14 +43,7 @@ public class MemoryGameDAO implements GameDAO{
     }
 
 
-    public void deleteGame(int gameID) throws DataAccessException {
-        if(gameList.get(gameID) != null){
-            gameList.remove(gameID);
-        }
-        else {
-            throw new DataAccessException("Error: bad request");
-        }
-    }
+
 
     @Override
     public Collection<GameData> getAllGames() {

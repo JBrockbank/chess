@@ -53,14 +53,14 @@ public class SQLGameDAO implements GameDAO{
             if (!rs.next()){
                 throw new DataAccessException("Error: bad request");
             }
-            int ID = rs.getInt("gameID");
+            int id = rs.getInt("gameID");
             String whiteUsername = rs.getString("whiteUsername");
             String blackUsername = rs.getString("blackUsername");
             String gameName = rs.getString("gameName");
             String gameJSON = rs.getString("game");
             ChessGame game = new Gson().fromJson(gameJSON, ChessGame.class);
 
-            return new GameData(ID, whiteUsername, blackUsername, gameName, game);
+            return new GameData(id, whiteUsername, blackUsername, gameName, game);
         }
         catch (Exception e) {
             throw new DataAccessException("Error: bad request");

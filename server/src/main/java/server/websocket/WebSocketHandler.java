@@ -45,12 +45,7 @@ public class WebSocketHandler {
         }
     }
 
-//    @OnWebSocketError
-//    public void onWebSocketError(Throwable cause){
-//        System.err.println("WebSocket error occurred:");
-//        System.err.println(cause.getMessage());
-//        cause.printStackTrace();
-//    }
+
 
 
     public void joinGame(String action, Session session) {
@@ -82,8 +77,7 @@ public class WebSocketHandler {
                 return;
             }
 
-//            authenticateToken(authToken);
-//        String userName = getUsername(authToken);
+
             if (game.whiteUsername() != null && color == ChessGame.TeamColor.WHITE && !(userName.equals(game.whiteUsername()))){
                 Error error = new Error("Spot already taken");
                 String message = new Gson().toJson(error);
@@ -91,8 +85,7 @@ public class WebSocketHandler {
                 return;
             }
             else if (game.blackUsername()!= null && color == ChessGame.TeamColor.BLACK && !(userName.equals(game.blackUsername()))){
-//               Error message = new Error("Error: Black already taken");
-//                connections.sendErrorMessage(session, message);
+
                 Error error = new Error("Spot already taken");
                 connections.sendMessage(gameID, authToken, new Gson().toJson(error));
                 return;
@@ -154,7 +147,6 @@ public class WebSocketHandler {
             var notification = new Notification(message);
             connections.broadcast("", notification, gameID);
         } catch (IOException e) {
-//            throw new RuntimeException(e);
         }
     }
 
@@ -170,7 +162,6 @@ public class WebSocketHandler {
             var loadGame = new LoadGame(game);
             connections.sendMessage(gameID, authToken, new Gson().toJson(loadGame));
         } catch (Exception e) {
-//            throw new RuntimeException(e);
         }
     }
 
@@ -268,7 +259,6 @@ public class WebSocketHandler {
             AuthData authData = authDAO.getAuth(authToken);
             return authData.username();
         } catch (DataAccessException ex) {
-//            System.out.print("Data Access Exception: " + ex.getMessage());
             return "";
         }
 

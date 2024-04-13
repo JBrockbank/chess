@@ -77,17 +77,17 @@ public class GameServiceTests {
     @Test
     void listGamesTest() throws Exception {
         gameService.createGame("game1");
-        Collection<GameData> gameList = gameService.ListGames();
+        Collection<GameData> gameList = gameService.listGames();
         assertEquals(gameList.size(), 1);
         gameService.createGame("game2");
-        gameList = gameService.ListGames();
+        gameList = gameService.listGames();
         assertEquals(gameList.size(), 2);
     }
 
     @Test
     void listGamesTestFail() throws Exception {
         gameService.createGame("game1");
-        Collection<GameData> gameList = gameService.ListGames();
+        Collection<GameData> gameList = gameService.listGames();
         UserData user = new UserData("u", "p", "e");
         assertFalse(userService.verifyUser(user));
     }

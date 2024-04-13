@@ -36,13 +36,13 @@ public class PieceMovesCalculator {
         this.position = position;
     }
 
-    public void AddMove(int row, int col){
+    public void addMove(int row, int col){
         ChessPosition endPosition = new ChessPosition(row, col);
         ChessMove move = new ChessMove(position, endPosition, null);
         validMoves.add(move);
     }
 
-    public boolean CanMoveHere(int row, int col) {
+    public boolean canMoveHere(int row, int col) {
         if (row >= 1 && row < 9 && col >= 1 && col < 9){
             ChessPosition pos = new ChessPosition(row, col);
             if(chessBoard.getPiece(pos) == null){
@@ -51,7 +51,7 @@ public class PieceMovesCalculator {
                 return false;
             }
             else {
-                AddMove(row, col);
+                addMove(row, col);
                 return false;
             }
         }
