@@ -165,6 +165,8 @@ public class ChessClient {
             playerColor = playerColor.toUpperCase();
             ChessGame.TeamColor color = convertColor(playerColor);
             this.playerColor = color;
+            server.joinGame(gameID, playerColor);
+
             ws = new WebSocketFacade(serverUrl);
             ws.joinGame(authToken, gameID, color);
             state = State.Game;
@@ -188,9 +190,9 @@ public class ChessClient {
                 throw new Exception("Game doesn't exist");
             }
             this.gameID = gameDataList.get(ID-1).gameID();
-            GameData gameData = server.observeGame(gameID);
+
             ws = new WebSocketFacade(serverUrl);
-            ws.joinObserver(authToken, gameID, gameData);
+            ws.joinObserver(authToken, gameID);
             state = State.Game;
             playerColor = null;
             return "";
@@ -242,7 +244,9 @@ public class ChessClient {
             int endRow = Integer.parseInt(rowChar);
             int endCol = letterToNumber(columnChar);
             ChessPosition endPos = new ChessPosition(endRow, endCol);
-            ws.makeMove(username, startPos, endPos, gameID, playerColor);
+            ChessMove move = new ChessMove(startPos, endPos, null);
+
+            ws.makeMove(authToken, move, gameID);
         }
         else {
             throw new Exception("Error: Expected makemove <piece position> <new piece position");
@@ -306,7 +310,7 @@ public class ChessClient {
 
     public String resign() throws Exception {
         assertInGame();
-//        ws.resign(gameID);
+        ws.resign(authToken, gameID);
         return "";
     }
 

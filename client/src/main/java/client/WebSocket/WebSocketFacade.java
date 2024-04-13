@@ -61,12 +61,12 @@ public class WebSocketFacade extends Endpoint {
         }
     }
 
-    @OnWebSocketError
-    public void onWebSocketError(Throwable cause){
-        System.err.println("WebSocket error occurred:");
-        System.err.println(cause.getMessage());
-        cause.printStackTrace();
-    }
+//    @OnWebSocketError
+//    public void onWebSocketError(Throwable cause){
+//        System.err.println("WebSocket error occurred:");
+//        System.err.println(cause.getMessage());
+//        cause.printStackTrace();
+//    }
 
     //Endpoint requires this method, but you don't have to do anything
     @Override
@@ -96,9 +96,9 @@ public class WebSocketFacade extends Endpoint {
         }
     }
 
-    public void joinObserver(String authToken, int gameID, GameData game) throws Exception {
+    public void joinObserver(String authToken, int gameID) throws Exception {
         try {
-            var action = new JoinObserver(authToken, gameID, game);
+            var action = new JoinObserver(authToken, gameID);
             this.session.getBasicRemote().sendText(new Gson().toJson(action));
         } catch (IOException ex) {
 //            throw new ResponseException(500, ex.getMessage());
@@ -136,9 +136,13 @@ public class WebSocketFacade extends Endpoint {
         }
     }
 
-    public void makeMove(String authToken, ChessPosition startPos, ChessPosition endPos, int gameID, ChessGame.TeamColor color) throws IOException {
-        ChessMove move = new ChessMove(startPos, endPos, null);
-        var action = new MakeMove(authToken, move, gameID, color);
+    public void makeMove(String authToken, ChessMove move, int gameID) throws IOException {
+        var action = new MakeMove(authToken, move, gameID);
+        this.session.getBasicRemote().sendText(new Gson().toJson(action));
+    }
+
+    public void resign(String authToken, int gameID) throws IOException {
+        var action = new Resign(authToken, gameID);
         this.session.getBasicRemote().sendText(new Gson().toJson(action));
     }
 

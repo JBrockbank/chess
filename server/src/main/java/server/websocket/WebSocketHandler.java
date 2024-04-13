@@ -41,19 +41,20 @@ public class WebSocketHandler {
             case LEAVE -> leaveGame(message, session);
             case REDRAW -> redraw(message, session);
             case MAKE_MOVE -> makeMove(message, session);
+            case RESIGN -> resign(message, session);
 
         }
     }
 
-    @OnWebSocketError
-    public void onWebSocketError(Throwable cause){
-        System.err.println("WebSocket error occurred:");
-        System.err.println(cause.getMessage());
-        cause.printStackTrace();
-    }
+//    @OnWebSocketError
+//    public void onWebSocketError(Throwable cause){
+//        System.err.println("WebSocket error occurred:");
+//        System.err.println(cause.getMessage());
+//        cause.printStackTrace();
+//    }
 
 
-    private void joinGame(String action, Session session) {
+    public void joinGame(String action, Session session) {
         JoinPlayer joinPlayer = new Gson().fromJson(action, JoinPlayer.class);
 
         String authToken = joinPlayer.getAuthToken();
@@ -115,26 +116,28 @@ public class WebSocketHandler {
     }
 
 
-    private void joinObserver(String action, Session session) {
+    public void joinObserver(String action, Session session) {
+        JoinObserver joinObserver = new Gson().fromJson(action, JoinObserver.class);
+        String authToken = joinObserver.getAuthToken();
+        int gameID = joinObserver.getGameID();
+        connections.add(gameID, authToken, session);
         try {
-            JoinObserver joinObserver = new Gson().fromJson(action, JoinObserver.class);
-            String authToken = joinObserver.getAuthToken();
-            int gameID = joinObserver.getGameID();
-
-            GameData gameData = new SQLGameDAO().getGame(gameID);
-
+            authenticateToken(authToken);
+            GameData gameData = gameDAO.getGame(gameID);
             String userName = getUsername(authToken);
-
 
             var message = String.format(userName + " has joined as an observer");
             var notification = new Notification(message);
-            //Pass in game ID to seperate the difference connection maps
             connections.add(gameID, authToken, session);
             connections.broadcast(authToken, notification, gameID);
+
             var loadGame = new LoadGame(gameData);
             connections.sendMessage(gameID, authToken, new Gson().toJson(loadGame));
         } catch (Exception ex) {
-//            throw new ResponseException(500, ex.getMessage());
+            Error error = new Error(ex.getMessage());
+            System.out.println(ex.getMessage());
+            String message = new Gson().toJson(error);
+            connections.sendMessage(gameID, authToken, message);
         }
 
     }
@@ -174,36 +177,89 @@ public class WebSocketHandler {
 
 
     public void makeMove(String action, Session session) {
-        try {
+
             MakeMove makeMove = new Gson().fromJson(action, MakeMove.class);
             int gameID = makeMove.getGameID();
             ChessMove move = makeMove.getMove();
-            ChessGame.TeamColor color = makeMove.getPlayerColor();
             String authToken = makeMove.getAuthToken();
-
-            String username = makeMove.getAuthToken();
+       try {
             SQLGameDAO gameDAO = new SQLGameDAO();
             GameData game = gameDAO.getGame(gameID);
+            ChessGame.TeamColor color = null;
+
+            AuthData auth = authDAO.getAuth(authToken);
+            String username = auth.username();
+
+            if (game.game().isGameOver){
+                throw new Exception("Game is already over. Cannot make another move");
+            }
+
+           if (Objects.equals(game.blackUsername(), username)) {
+               color = ChessGame.TeamColor.BLACK;
+           }
+           else if (Objects.equals(game.whiteUsername(), username)) {
+               color = ChessGame.TeamColor.WHITE;
+           }
+           else {
+               Error error = new Error("Error: Not one of the teams");
+               String message = new Gson().toJson(error);
+               connections.sendMessage(gameID, authToken, message);
+               return;
+           }
 
             if (color != game.game().turnColor) {
-//                throw new ResponseException(500, "Error: Not your turn");
+                Error error = new Error("Error: Not one of the teams");
+                String message = new Gson().toJson(error);
+                connections.sendMessage(gameID, authToken, message);
+                return;
             }
             game.game().makeMove(move);
             gameDAO.updateGame(gameID, game);
-
             LoadGame newGame = new LoadGame(game);
             connections.broadcast("", newGame, gameID);
             String message = (username + " has made a move: " + move);
             Notification serverMessage = new Notification(message);
             connections.broadcast(authToken, serverMessage, gameID);
-        } catch (InvalidMoveException ex) {
-//            System.out.print("Error - InvalidMoveException: " + ex.getMessage());
-        } catch (DataAccessException ex) {
-//            System.out.print("Error - DataAccessException: " + ex.getMessage());
-        } catch (IOException e) {
-//            throw new RuntimeException(e);
-        }
+        } catch (Exception ex) {
+           Error error = new Error(ex.getMessage());
+           System.out.println(ex.getMessage());
+           String message = new Gson().toJson(error);
+           connections.sendMessage(gameID, authToken, message);
+       }
+    }
 
+
+    public void resign(String action, Session session) {
+        Resign resign = new Gson().fromJson(action, Resign.class);
+        int gameID = resign.getGameID();
+        String authToken = resign.getAuthToken();
+
+        try {
+            AuthData auth = authDAO.getAuth(authToken);
+            String username = auth.username();
+
+            GameData game = gameDAO.getGame(gameID);
+            if(game.game().isGameOver) {
+                throw new Exception("Game is already over");
+            }
+            else if (!Objects.equals(username, game.blackUsername()) && !Objects.equals(username, game.whiteUsername())){
+                throw new Exception("Observers cannot resign game");
+            }
+
+            game.game().isGameOver = true;
+            gameDAO.updateGame(gameID, game);
+
+
+            String message = String.format("%s has resigned.\n GAME OVER", username);
+            Notification notification = new Notification(message);
+            connections.broadcast("", notification, gameID);
+
+        } catch (Exception ex) {
+            Error error = new Error(ex.getMessage());
+            System.out.println(ex.getMessage());
+            String message = new Gson().toJson(error);
+            connections.sendMessage(gameID, authToken, message);
+        }
 
     }
 
