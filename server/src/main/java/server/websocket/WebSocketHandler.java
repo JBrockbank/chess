@@ -217,8 +217,7 @@ public class WebSocketHandler {
            connections.sendMessage(gameID, authToken, message);
        }
     }
-
-
+    
     public void resign(String action, Session session) {
         Resign resign = new Gson().fromJson(action, Resign.class);
         int gameID = resign.getGameID();
