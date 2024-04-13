@@ -35,25 +35,9 @@ public class MemoryUserDAO implements UserDAO {
     }
 
 
-    @Override
-    public void updateUser(UserData u) throws DataAccessException{
-        if(userList.get(u.username()) != null){
-            userList.replace(u.username(), u);
-        }
-        else {
-            throw new DataAccessException("Error: bad request");
-        }
-    }
 
-    @Override
-    public void deleteUser(String username) throws DataAccessException{
-        if(userList.get(username) != null){
-            userList.remove(username);
-        }
-        else {
-            throw new DataAccessException("Error: bad request");
-        }
-    }
+
+
 
     @Override
     public Collection<UserData> getUserList(){

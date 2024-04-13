@@ -61,15 +61,7 @@ public class SQLUserDAO implements UserDAO {
             throw new DataAccessException(e.getMessage());
         }
     }
-    @Override
-    public void updateUser(UserData u) throws DataAccessException {
 
-    }
-
-    @Override
-    public void deleteUser(String username) throws DataAccessException {
-
-    }
 
     @Override
     public Collection<UserData> getUserList() {
