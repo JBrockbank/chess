@@ -32,7 +32,6 @@ public class WebSocketHandler {
 
     @OnWebSocketMessage
     public void onMessage(Session session, String message) throws Exception {
-        System.out.print("Server.WebSocketHandler.onMessage called");
         UserGameCommand action = new Gson().fromJson(message, UserGameCommand.class);
         switch (action.getCommandType()) {
             case JOIN_PLAYER -> joinGame(message, session);
@@ -64,7 +63,7 @@ public class WebSocketHandler {
             String userName = auth.username();
 
             if (!Objects.equals(userName, game.whiteUsername()) && !Objects.equals(userName, game.blackUsername())){
-                Error error = new Error("Need to call http first");
+                Error error = new Error("Need to call http first\n");
                 connections.sendMessage(gameID, authToken, new Gson().toJson(error));
                 return;
             }
@@ -72,26 +71,26 @@ public class WebSocketHandler {
 
 
             if (color != ChessGame.TeamColor.WHITE && color != ChessGame.TeamColor.BLACK) {
-                Error error = new Error("No color");
+                Error error = new Error("No color\n");
                 connections.sendMessage(gameID, authToken, new Gson().toJson(error));
                 return;
             }
 
 
             if (game.whiteUsername() != null && color == ChessGame.TeamColor.WHITE && !(userName.equals(game.whiteUsername()))){
-                Error error = new Error("Spot already taken");
+                Error error = new Error("Spot already taken\n");
                 String message = new Gson().toJson(error);
                 connections.sendMessage(gameID, authToken, message);
                 return;
             }
             else if (game.blackUsername()!= null && color == ChessGame.TeamColor.BLACK && !(userName.equals(game.blackUsername()))){
 
-                Error error = new Error("Spot already taken");
+                Error error = new Error("Spot already taken\n");
                 connections.sendMessage(gameID, authToken, new Gson().toJson(error));
                 return;
             }
 
-            var message = String.format(userName + " has joined team " + color);
+            var message = String.format(userName + " has joined team " + color + "\n");
             var notification = new Notification(message);
 
             connections.add(gameID, authToken, session);
@@ -118,7 +117,7 @@ public class WebSocketHandler {
             GameData gameData = gameDAO.getGame(gameID);
             String userName = getUsername(authToken);
 
-            var message = String.format(userName + " has joined as an observer");
+            var message = String.format(userName + " has joined as an observer\n");
             var notification = new Notification(message);
             connections.add(gameID, authToken, session);
             connections.broadcast(authToken, notification, gameID);
@@ -143,7 +142,7 @@ public class WebSocketHandler {
             String userName = getUsername(authToken);
 
             connections.remove(gameID, authToken, session);
-            var message = String.format(userName + " has left the game");
+            var message = String.format(userName + " has left the game\n");
             var notification = new Notification(message);
             connections.broadcast("", notification, gameID);
         } catch (IOException e) {
@@ -181,7 +180,7 @@ public class WebSocketHandler {
             String username = auth.username();
 
             if (game.game().isGameOver){
-                throw new Exception("Game is already over. Cannot make another move");
+                throw new Exception("Game is already over. Cannot make another move\n");
             }
 
            if (Objects.equals(game.blackUsername(), username)) {
@@ -191,33 +190,65 @@ public class WebSocketHandler {
                color = ChessGame.TeamColor.WHITE;
            }
            else {
-               Error error = new Error("Error: Not one of the teams");
+               Error error = new Error("Error: Not one of the teams\n");
                String message = new Gson().toJson(error);
                connections.sendMessage(gameID, authToken, message);
                return;
            }
 
             if (color != game.game().turnColor) {
-                Error error = new Error("Error: Not one of the teams");
+                Error error = new Error("Error: Not your turn\n");
                 String message = new Gson().toJson(error);
                 connections.sendMessage(gameID, authToken, message);
                 return;
             }
+
             game.game().makeMove(move);
             gameDAO.updateGame(gameID, game);
+
+
+
             LoadGame newGame = new LoadGame(game);
             connections.broadcast("", newGame, gameID);
-            String message = (username + " has made a move: " + move);
+            String message = (username + " has made a move: " + move + "\n");
             Notification serverMessage = new Notification(message);
             connections.broadcast(authToken, serverMessage, gameID);
-        } catch (Exception ex) {
+            color = ChessGame.TeamColor.BLACK;
+
+           var turnColor = game.game().getTeamTurn();
+           if (game.game().isInCheck(turnColor) && !game.game().isInCheckmate(turnColor)){
+               String turnUsername = game.blackUsername();
+               if (turnColor == ChessGame.TeamColor.WHITE){
+                   turnUsername = game.whiteUsername();
+               }
+               String newMessage = (turnUsername + " is in check\n");
+               Notification Message = new Notification(newMessage);
+               connections.broadcast("", Message, gameID);
+           }
+
+
+           for (int i = 0; i < 2; i++) {
+                if (game.game().isInCheckmate(color)) {
+                    game.game().isGameOver = true;
+                    gameDAO.updateGame(gameID, game);
+                    Notification notification = new Notification(color.toString() + " is in checkmate. GAME OVER\n");
+                    connections.broadcast("", notification, gameID);
+                }
+                color = ChessGame.TeamColor.WHITE;
+           }
+
+       } catch (InvalidMoveException e) {
+           Error error = new Error("Invalid Move\n");
+           String message = new Gson().toJson(error);
+           connections.sendMessage(gameID, authToken, message);
+       } catch (Exception ex) {
            Error error = new Error(ex.getMessage());
            System.out.println(ex.getMessage());
            String message = new Gson().toJson(error);
            connections.sendMessage(gameID, authToken, message);
        }
     }
-    
+
     public void resign(String action, Session session) {
         Resign resign = new Gson().fromJson(action, Resign.class);
         int gameID = resign.getGameID();
@@ -229,17 +260,17 @@ public class WebSocketHandler {
 
             GameData game = gameDAO.getGame(gameID);
             if(game.game().isGameOver) {
-                throw new Exception("Game is already over");
+                throw new Exception("Game is already over\n");
             }
             else if (!Objects.equals(username, game.blackUsername()) && !Objects.equals(username, game.whiteUsername())){
-                throw new Exception("Observers cannot resign game");
+                throw new Exception("Observers cannot resign game\n");
             }
 
             game.game().isGameOver = true;
             gameDAO.updateGame(gameID, game);
 
 
-            String message = String.format("%s has resigned.\n GAME OVER", username);
+            String message = String.format("%s has resigned.\n GAME OVER\n", username);
             Notification notification = new Notification(message);
             connections.broadcast("", notification, gameID);
 
@@ -274,7 +305,6 @@ public class WebSocketHandler {
     }
 
     private void authenticateToken(String authToken) throws DataAccessException {
-        System.out.print("Authenticating");
         SQLAuthDAO authDAO = new SQLAuthDAO();
         authDAO.getAuth(authToken);
     }

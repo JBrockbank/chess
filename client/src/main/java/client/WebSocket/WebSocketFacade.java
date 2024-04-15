@@ -10,6 +10,8 @@ import ui.DrawBoard;
 import webSocketMessages.serverMessages.LoadGame;
 import webSocketMessages.serverMessages.Notification;
 import webSocketMessages.serverMessages.ServerMessage;
+import webSocketMessages.serverMessages.Error;
+
 import webSocketMessages.userCommands.*;
 
 import javax.websocket.*;
@@ -69,7 +71,7 @@ public class WebSocketFacade extends Endpoint {
 
     public void error(String message) {
         Error error  = new Gson().fromJson(message, Error.class);
-        System.out.print(error.getMessage());
+        System.out.print(error.getErrorMessage());
     }
 
     public void notification(String message) {
@@ -80,12 +82,10 @@ public class WebSocketFacade extends Endpoint {
 
     public void joinGame(String authToken, int gameID, ChessGame.TeamColor color) throws Exception {
         try {
-            System.out.print("\nClient.WebSocketFacade.joinGame called");
             playerColor = color;
             var action = new JoinPlayer(authToken, gameID, color);
             this.session.getBasicRemote().sendText(new Gson().toJson(action));
         } catch (IOException ex) {
-            System.out.print("Here");
         }
     }
 
@@ -99,7 +99,6 @@ public class WebSocketFacade extends Endpoint {
 
 
     public void loadGame(String message) {
-        System.out.print("WSF: Load Game Called");
         LoadGame loadGame  = new Gson().fromJson(message, LoadGame.class);
         GameData game = loadGame.getGame();
         String bUsername = game.blackUsername();

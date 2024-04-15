@@ -59,18 +59,18 @@ public class DrawBoard {
 
 
 
-    private void drawBoardWhite(PrintStream out, ChessGame game) {
+    private void drawBoardBlack(PrintStream out, ChessGame game) {
         writeLetters(out);
         for (int j = 1; j < 9; j++){
             out.print(SET_TEXT_COLOR_WHITE);
             out.print(j);
             for (int i = 1; i < 9; i++) {
-                ChessPosition current = new ChessPosition(j, i);
+                ChessPosition current = new ChessPosition(j,9-i);
                 if (current.equals(pos)){
-                    doMainPieceWhite(out, game, j, i);
+                    doMainPieceWhite(out, game, j, 9-i);
                 }
-                else if (highlightSquares != null && highlightSquares.contains(new ChessPosition(j, i))){
-                    doHighlightWhite(out, game, j, i);
+                else if (highlightSquares != null && highlightSquares.contains(new ChessPosition(j, 9-i))){
+                    doHighlightWhite(out, game, j, 9-i);
                 }
                 else {
                     if ((j % 2) != 0){
@@ -80,7 +80,7 @@ public class DrawBoard {
                         else {
                             setBrown(out);
                         }
-                        evalBoard(out, game, j, i);
+                        evalBoard(out, game, j, 9-i);
                     }
                     else {
                         if ((i % 2) == 0){
@@ -89,7 +89,7 @@ public class DrawBoard {
                         else {
                             setYellow(out);
                         }
-                        evalBoard(out, game, j, i);
+                        evalBoard(out, game, j, 9-i);
                     }
                 }
             }
@@ -103,21 +103,21 @@ public class DrawBoard {
     private static void writeLetters(PrintStream out) {
         out.print(RESET_BG_COLOR);
         out.print(SET_TEXT_COLOR_WHITE);
-        out.print("  A ");
-        out.print(" B ");
-        out.print(" C ");
-        out.print(" D ");
-        out.print(" E ");
-        out.print(" F ");
+        out.print("  H ");
         out.print(" G ");
-        out.print(" H \n");
+        out.print(" F ");
+        out.print(" E ");
+        out.print(" D ");
+        out.print(" C ");
+        out.print(" B ");
+        out.print(" A \n");
     }
 
 
-    private void doMainPieceBlack(PrintStream out, ChessGame game, int j, int i) {
-        setNeonYellow(out);
-        evalBoard(out, game, j, i);
-    }
+//    private void doMainPieceBlack(PrintStream out, ChessGame game, int j, int i) {
+//        setNeonYellow(out);
+//        evalBoard(out, game, j, i);
+//    }
 
     private void doMainPieceWhite(PrintStream out, ChessGame game, int j, int i) {
         setBlue(out);
@@ -145,50 +145,50 @@ public class DrawBoard {
         }
     }
 
-    private void doHighlightBlack(PrintStream out, ChessGame game, int j, int i) {
-        if ((j % 2) != 0){
-            if ((i % 2) == 0){
-                setGreen(out);
-            }
-            else {
-                setDarkGreen(out);
-            }
-            evalBoard(out, game, 9-j, 9-i);
-        }
-        else {
-            if ((i % 2) == 0) {
-                setDarkGreen(out);
-            } else {
-                setGreen(out);
-            }
-            evalBoard(out, game, 9 - j, 9 - i);
-        }
-    }
+//    private void doHighlightBlack(PrintStream out, ChessGame game, int j, int i) {
+//        if ((j % 2) != 0){
+//            if ((i % 2) == 0){
+//                setGreen(out);
+//            }
+//            else {
+//                setDarkGreen(out);
+//            }
+//            evalBoard(out, game, 9-j, 9-i);
+//        }
+//        else {
+//            if ((i % 2) == 0) {
+//                setDarkGreen(out);
+//            } else {
+//                setGreen(out);
+//            }
+//            evalBoard(out, game, 9 - j, 9 - i);
+//        }
+//    }
 
 
 
 
-    private void drawBoardBlack(PrintStream out, ChessGame game) {
+    private void drawBoardWhite(PrintStream out, ChessGame game) {
         out.print(RESET_BG_COLOR);
         out.print(SET_TEXT_COLOR_WHITE);
-        out.print("  H ");
-        out.print(" G ");
-        out.print(" F ");
-        out.print(" E ");
-        out.print(" D ");
-        out.print(" C ");
+        out.print("  A ");
         out.print(" B ");
-        out.print(" A \n");
+        out.print(" C ");
+        out.print(" D ");
+        out.print(" E ");
+        out.print(" F ");
+        out.print(" G ");
+        out.print(" H \n");
         for (int j = 1; j < 9; j++){
             out.print(SET_TEXT_COLOR_WHITE);
             out.print(9-j);
             for (int i = 1; i < 9; i++) {
-                ChessPosition current = new ChessPosition(9-j, 9-i);
+                ChessPosition current = new ChessPosition(9-j, i);
                 if (current.equals(pos)){
-                    doMainPieceBlack(out, game, 9-j, 9-i);
+                    doMainPieceWhite(out, game, 9-j, i);
                 }
-                else if (highlightSquares != null && highlightSquares.contains(new ChessPosition(9-j, 9-i))){
-                    doHighlightBlack(out, game, 9-j, 9-i);
+                else if (highlightSquares != null && highlightSquares.contains(new ChessPosition(9-j, i))){
+                    doHighlightWhite(out, game, 9-j, i);
                 }
                 else {
                     if ((j % 2) != 0){
@@ -198,7 +198,7 @@ public class DrawBoard {
                         else {
                             setBrown(out);
                         }
-                        evalBoard(out, game, 9-j, 9-i);
+                        evalBoard(out, game, 9-j, i);
                     }
                     else {
                         if ((i % 2) == 0){
@@ -207,7 +207,7 @@ public class DrawBoard {
                         else {
                             setYellow(out);
                         }
-                        evalBoard(out, game, 9-j, 9-i);
+                        evalBoard(out, game, 9-j, i);
                     }
                 }
 
@@ -218,14 +218,14 @@ public class DrawBoard {
             out.print("\n");
         }
         out.print(SET_TEXT_COLOR_WHITE);
-        out.print("  H ");
-        out.print(" G ");
-        out.print(" F ");
-        out.print(" E ");
-        out.print(" D ");
-        out.print(" C ");
+        out.print("  A ");
         out.print(" B ");
-        out.print(" A ");
+        out.print(" C ");
+        out.print(" D ");
+        out.print(" E ");
+        out.print(" F ");
+        out.print(" G ");
+        out.print(" H ");
         out.print("\n");
     }
 
